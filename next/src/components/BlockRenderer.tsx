@@ -30,7 +30,7 @@ export default function BlockRenderer({ blocks }: BlockRendererProps) {
         <>
             {blocks?.map(block => {
                 const { id, type, settings, children } = block;
-
+console.log("type",type)
 
 
                 switch (type) {

@@ -56,8 +56,12 @@ const ProductCard = ({ product }: Props) => {
         ? PriceFormat(normalizedSalePrice) : undefined;
 
     const title = product.title?.fa || 'بدون عنوان';
-    const imageSrc = product.thumbnail || '/default.jpg';
-
+    let imageSrc = product.thumbnail || '/default.jpg';
+     imageSrc = product.thumbnail
+        ? product.thumbnail.startsWith('/')
+            ? product.thumbnail
+            : `/${product.thumbnail}`
+        : '/default.jpg';
     return (
         <div className="rounded-lg border p-3 shadow-sm hover:shadow-md transition cursor-pointer bg-white">
             <Link href={`/product/${product.slug}`} passHref>
