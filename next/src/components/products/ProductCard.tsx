@@ -8,14 +8,22 @@ import type { ProductCombination } from '@/types/product';
 import { useSelector } from 'react-redux';
 import type { RootState } from '@/store';
 import { formatPrice } from '@/utils';
+import { getBaseUrl } from '@/constants/config';
 
 type Props = {
     product: ProductType;
 };
 
 const ProductCard = ({ product }: Props) => {
+    let BaseConfig=getBaseUrl()
+    BaseConfig='https://asakala.shop'
     const theme = useSelector((state: RootState) => state.theme);
     const [selectedVariation, setSelectedVariation] = useState<ProductCombination | null>(null);
+    const [imgSrc, setImgSrc] = useState(product.thumbnail
+        ? product.thumbnail.startsWith('/')
+            ? BaseConfig+product.thumbnail
+            : `${BaseConfig}/${product.thumbnail}`
+        : '/default.jpg' || '/default.jpg');
     const currency = theme.data?.currency || 'تومان';
     const taxRate = theme.data?.tax && theme.data?.taxAmount
         ? 1 + parseFloat(theme.data.taxAmount) / 100
@@ -56,26 +64,27 @@ const ProductCard = ({ product }: Props) => {
         ? PriceFormat(normalizedSalePrice) : undefined;
 
     const title = product.title?.fa || 'بدون عنوان';
-    let imageSrc = product.thumbnail || '/default.jpg';
-     imageSrc = product.thumbnail
-        ? product.thumbnail.startsWith('/')
-            ? product.thumbnail
-            : `/${product.thumbnail}`
-        : '/default.jpg';
+    // let imageSrc = product.thumbnail || '/default.jpg';
+    //  imageSrc = product.thumbnail
+    //     ? product.thumbnail.startsWith('/')
+    //         ? product.thumbnail
+    //         : `/${product.thumbnail}`
+    //     : '/default.jpg';
     return (
         <div className="rounded-lg border p-3 shadow-sm hover:shadow-md transition cursor-pointer bg-white">
             <Link href={`/product/${product.slug}`} passHref>
                 <div className="relative aspect-square">
-                    <Image
-                        src={imageSrc}
+                    <img
+                        src={imgSrc}
                         alt={title}
                         fill
                         className="rounded-md object-cover"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.src = '/default.jpg';
-                        }}
+                        // onError={(e) => {
+                        //     const target = e.target as HTMLImageElement;
+                        //     target.src = '/default.jpg';
+                        // }}
+                        onError={() => setImgSrc('/default.jpg')}
                     />
                 </div>
                 <h3 className="mt-2 text-lg font-medium line-clamp-2">{title}</h3>

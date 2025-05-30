@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import NextImage from 'next/image';
+import { getBaseUrl } from '@/constants/config';
 
 type ImageProps = {
     settings: {
@@ -16,10 +17,18 @@ type ImageProps = {
 };
 
 export default function Image({ settings }: ImageProps) {
+    let BaseConfig=getBaseUrl()
+    BaseConfig='https://asakala.shop'
     const style = settings?.style?.fields || {};
-    const src = settings?.content?.fields?.src || '';
+    const width = settings?.style?.fields?.width || null;
+    const height = settings?.style?.fields?.width || null;
+    let src = settings?.content?.fields?.src || '';
     const alt = settings?.content?.fields?.alt || 'image';
-
+    src=src
+        ? src.startsWith('/')
+        ? BaseConfig+src
+        : `${BaseConfig}/${src}`
+        : '/default.jpg'
     const [imgSrc, setImgSrc] = useState(() => {
         const baseUrlFromWindow = typeof window !== 'undefined' && (window as any).BASE_URL;
         const baseUrlFromEnv = process.env.NEXT_PUBLIC_BASE_URL || '';
@@ -33,12 +42,12 @@ export default function Image({ settings }: ImageProps) {
 
     return (
         <div style={{ position: 'relative', ...style }}>
-            <NextImage
-                src={imgSrc}
+            <img
+                src={src}
                 alt={alt}
                 // layout="responsive"
-                width={500}
-                height={300}
+                width={width ? width : null}
+                height={height ? height : null}
                 onError={() => setImgSrc('/default.jpg')}
                 style={{ objectFit: 'cover' }}
             />
