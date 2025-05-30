@@ -20,8 +20,8 @@ export default function Image({ settings }: ImageProps) {
     let BaseConfig=getBaseUrl()
     BaseConfig='https://asakala.shop'
     const style = settings?.style?.fields || {};
-    const width = settings?.style?.fields?.width || null;
-    const height = settings?.style?.fields?.width || null;
+    const width = settings?.style?.fields?.width || undefined;
+    const height = settings?.style?.fields?.width || undefined;
     let src = settings?.content?.fields?.src || '';
     const alt = settings?.content?.fields?.alt || 'image';
     src=src
@@ -46,8 +46,8 @@ export default function Image({ settings }: ImageProps) {
                 src={src}
                 alt={alt}
                 // layout="responsive"
-                width={width ? width : null}
-                height={height ? height : null}
+                width={width ? width : undefined}
+                height={height ? height : undefined}
                 onError={() => setImgSrc('/default.jpg')}
                 style={{ objectFit: 'cover' }}
             />

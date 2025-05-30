@@ -23,7 +23,7 @@ const ProductCard = ({ product }: Props) => {
         ? product.thumbnail.startsWith('/')
             ? BaseConfig+product.thumbnail
             : `${BaseConfig}/${product.thumbnail}`
-        : '/default.jpg' || '/default.jpg');
+        : '/default.jpg');
     const currency = theme.data?.currency || 'تومان';
     const taxRate = theme.data?.tax && theme.data?.taxAmount
         ? 1 + parseFloat(theme.data.taxAmount) / 100
@@ -77,7 +77,7 @@ const ProductCard = ({ product }: Props) => {
                     <img
                         src={imgSrc}
                         alt={title}
-                        fill
+                        // fill
                         className="rounded-md object-cover"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         // onError={(e) => {
