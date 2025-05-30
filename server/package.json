@@ -1,0 +1,63 @@
+{
+  "name": "use-nodeeweb",
+  "version": "0.0.1",
+  "type": "module",
+  "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@mui/material": "^6.4.7",
+    "@nodeeweb/server": "link:./packages/server",
+    "@nodeeweb/shop": "link:./packages/shop",
+    "archiver": "^7.0.1",
+    "axios": "^1.2.4",
+    "babel-plugin-transform-typescript-metadata": "^0.3.2",
+    "babel-register": "^6.26.0",
+    "basic-ftp": "^5.0.5",
+    "cheerio": "^1.0.0-rc.12",
+    "dotenv": "^16.0.1",
+    "form-data": "^4.0.1",
+    "fs": "^0.0.1-security",
+    "http-proxy": "^1.18.1",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.4",
+    "next": "^15.3.2",
+    "nodemon": "^3.0.2",
+    "pdfkit": "^0.15.1",
+    "pretty": "^2.0.0",
+    "react-i18next": "^15.4.1",
+    "react-redux": "^9.2.0",
+    "react-router-dom": "6",
+    "ssh2-sftp-client": "9.0.4",
+    "translate": "^3.0.1",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "xlsx": "^0.18.5"
+  },
+  "scripts": {
+    "start": "node --optimize_for_size --max-old-space-size=10024 index.mjs",
+    "ssr": "set BABEL_CACHE_PATH=./node_modules/babel-cache.json && babel-node --presets env index.mjs",
+    "build": "babel ./front/src --out-dir ./dist --extensions '.js,.jsx,.ts,.tsx'",
+    "dev": "nodemon index.mjs",
+    "test": "node -r @babel/register index.js",
+    "test2": "yarn build && node --loader ts-node/esm ./front/src/ssr.mjs",
+    "test3": "yarn babel-node ./front/src/ssr.mjs --extensions '.ts,.tsx'",
+    "test4": "NODE_OPTIONS='--experimental-loader ./alias-loader.mjs' node index.mjs",
+    "test5": "NODE_OPTIONS='--experimental-loader ./alias-loader.mjs' node --no-warnings index.mjs"
+  },
+  "main": "index.mjs",
+  "devDependencies": {
+    "@babel/cli": "^7.19.3",
+    "@babel/core": "^7.26.9",
+    "@babel/node": "^7.26.0",
+    "@babel/plugin-transform-runtime": "^7.26.9",
+    "@babel/preset-env": "^7.26.9",
+    "@babel/preset-react": "^7.26.3",
+    "@babel/preset-typescript": "^7.26.0",
+    "@babel/register": "^7.25.9",
+    "babel-plugin-module-resolver": "^5.0.2",
+    "typescript": "^5.8.2"
+  },
+  "imports": {
+    "#c/*": ["../../../../front/src/*"],
+    "moment": "./node_modules/moment/moment.js"
+  }
+}

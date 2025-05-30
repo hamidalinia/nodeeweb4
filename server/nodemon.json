@@ -1,0 +1,4 @@
+{
+  "watch": ["src/*","entity/*"],
+  "ext": "js, mjs, html, css, json"
+}

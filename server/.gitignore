@@ -1,0 +1,4 @@
+public_media/
+node_modules/
+packages/*/node_modules/
+packages/*/public_media/

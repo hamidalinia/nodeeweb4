@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "module": "NodeNext",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "moduleResolution": "NodeNext",
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["./front/src/*"],
+      "@/functions/*": ["./front/src/functions/*"],
+      "#c/*": ["./front/src/*"]
+    },
+    "jsx": "react-jsx"
+  },
+  "include": ["front/src","front/src/window.d.ts"]
+
+}

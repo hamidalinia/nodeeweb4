@@ -1,0 +1,29 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.mahsaaz.twa",
+      "sha256_cert_fingerprints": [
+        "B9:60:5E:9B:1A:9F:32:7F:B0:40:3D:87:87:57:75:FD:0D:7B:75:56:59:32:22:88:AE:69:6A:52:6B:48:C5:64"
+      ]
+    }
+  },
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.mahsaaz.twa",
+      "sha256_cert_fingerprints": [
+        "6F:C2:A7:DE:94:1E:3A:18:9A:14:3F:8F:C7:16:F0:36:79:A5:8E:D2:D4:F1:34:F1:87:24:3D:81:15:45:F3:C2"
+      ]
+    }
+  },
+  {
+    "relation": ["check_validation"],
+    "target": {
+      "namespace": "cafebazaar_twa",
+      "package_name": "com.mahsaaz.twa"
+    }
+  }
+]

@@ -1,0 +1,14 @@
+/*!
+ * Splide.js
+ * Version  : 4.1.3
+ * License  : MIT
+ * Copyright: 2022 Naotoshi Fujita
+ */
+
+/**
+ * A better abstraction over CSS.
+ *
+ * @copyright Oleg Isonen (Slobodskoi) / Isonen 2014-present
+ * @website https://github.com/cssinjs/jss
+ * @license MIT
+ */
