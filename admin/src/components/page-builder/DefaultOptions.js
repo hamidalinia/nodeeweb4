@@ -37,6 +37,14 @@ const DefaultOptions =[
             }
         },
     },
+  {
+        label: 'ThemeMode',
+        type: 'thememode',
+        addable: false,
+        settings: {
+
+        },
+    },
     {
         label: 'Paragraph',
         type: 'paragraph',

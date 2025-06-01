@@ -47,16 +47,16 @@ const Component = ({
           {/* <IconButton title="Duplicate" onClick={() => onDuplicate(item)}>
             <ContentCopyRounded />
           </IconButton> */}
-            {(item?.settings?.general?.fields?.link) && <LinkIcon/>}
-            {(item?.settings?.general?.fields?.display=='none') && <VisibilityOffIcon/>}
-            {(item?.settings?.general?.fields?.showInDesktop) && <LaptopIcon/>}
-            {(item?.settings?.general?.fields?.showInMobile) && <TabletMacIcon/>}
+            {(item?.settings?.style?.fields?.link) && <LinkIcon/>}
+            {(item?.settings?.style?.fields?.display=='none') && <VisibilityOffIcon/>}
+            {(item?.settings?.responsive?.fields?.showInDesktop) && <LaptopIcon/>}
+            {(item?.settings?.responsive?.fields?.showInMobile) && <TabletMacIcon/>}
           <IconButton title="Delete" onClick={() => onDelete(item.id)}>
             <CloseRounded />
           </IconButton>
 
           <p>{`${item.type} ${index + 1}: ${item.id}`}</p>
-            {(item?.settings?.general?.fields?.label) && <p>{item?.settings?.general?.fields?.label}</p>}
+            {(item?.settings?.content?.fields?.label) && <p>{item?.settings?.content?.fields?.label}</p>}
 
           <IconButton title="Edit" onClick={() => onEdit(item)}>
             <EditRounded />
@@ -83,10 +83,10 @@ const Component = ({
       </Header>
 
       <Content className="content">
-          {(item?.type=='image') && <img className={'pg-builder-dc'} src={MainUrl+'/'+(item?.settings?.general?.fields?.src)}/>}
-          {(item?.type=='text') && <span  className={'pg-builder-dc'} style={{color:"#000"}}>{(item?.settings?.general?.fields?.text)}</span>}
-          {(item?.type=='navigationitem') && <span  className={'pg-builder-dc'} style={{color:"#000"}}>{(item?.settings?.general?.fields?.text)}</span>}
-          {(item?.type=='button') && <span  className={'pg-builder-dc'} style={{color:"#000"}}>{(item?.settings?.general?.fields?.text)} - {(item?.settings?.general?.fields?.action)}</span>}
+          {(item?.type=='image') && <img className={'pg-builder-dc'} src={MainUrl+'/'+(item?.settings?.content?.fields?.src)}/>}
+          {(item?.type=='text') && <span  className={'pg-builder-dc'} style={{color:"#000"}}>{(item?.settings?.content?.fields?.text)}</span>}
+          {(item?.type=='navigationitem') && <span  className={'pg-builder-dc'} style={{color:"#000"}}>{(item?.settings?.content?.fields?.text)}</span>}
+          {(item?.type=='button') && <span  className={'pg-builder-dc'} style={{color:"#000"}}>{(item?.settings?.content?.fields?.text)} - {(item?.settings?.content?.fields?.action)}</span>}
 
         {item.addable && (
           <AnimatePresence presenceAffectsLayout>

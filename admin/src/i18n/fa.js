@@ -12,6 +12,7 @@ export default {
     logoutMessage: 'برای خروج مطمئن هستید؟',
     practiceText: 'متن تمرین',
     status: 'وضعیت',
+  ThemeMode: 'حالت قالب (تیره/روشن)',
     normal: 'عادی',
     variable: 'متغیر',
     topProductOrders: 'پرفروشترین محصولات',
