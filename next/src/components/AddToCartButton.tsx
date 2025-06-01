@@ -6,6 +6,7 @@ import { addToCart } from '@/store/slices/cartSlice';
 import { ProductType } from '@/types/product';
 import type { ProductCombination } from "@/types/product";
 import type { CartItem } from "@/types/cart";
+import { useTranslation } from 'next-i18next'
 
 type Props = {
     item: ProductType;
@@ -16,7 +17,9 @@ type Props = {
 
 export default function AddToCartButton({ item, variable = false, selectedVariation = null }: Props) {
     const dispatch = useDispatch();
-
+    const { t,ready } = useTranslation('translation');
+    // console.log(ready)
+    // console.log(t('hello-world'))
     const handleAddToCart = () => {
         if (variable && !selectedVariation) {
             toast.error('Please select a variation');
@@ -63,10 +66,10 @@ export default function AddToCartButton({ item, variable = false, selectedVariat
             onClick={handleAddToCart}
             className="inline-flex items-center justify-center px-5 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
             type="button"
-            aria-label="Add to cart"
+            aria-label={t('Add to cart')}
             disabled={variable && !selectedVariation}
         >
-            Add to cart
+            {t('Add to cart')}
         </button>
     );
 }

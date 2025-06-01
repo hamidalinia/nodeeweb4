@@ -71,7 +71,7 @@ const ProductCard = ({ product }: Props) => {
     //         : `/${product.thumbnail}`
     //     : '/default.jpg';
     return (
-        <div className="rounded-lg border p-3 shadow-sm hover:shadow-md transition cursor-pointer bg-white">
+        <div className="product-card rounded-lg border p-3 shadow-sm hover:shadow-md transition cursor-pointer bg-white">
             <Link href={`/product/${product.slug}`} passHref>
                 <div className="relative aspect-square">
                     <img

@@ -27,7 +27,7 @@ export default function CustomSlider({ settings,products: externalProducts,  chi
     const style = settings?.style?.fields || {};
     const contentFields = settings?.content?.fields || {};
 
-    const entity = contentFields.entity || 'product';
+    const entity = contentFields.entity || null;
     const perPage = parseInt(contentFields.perPage || '12');
     const customQuery = contentFields.customQuery;
     // const showArrows = contentFields.arrows !== false;
@@ -42,14 +42,16 @@ let showArrows=true
     }, []);
 
     useEffect(() => {
-        setLoading(true);
-        fetchEntity(entity, 0, perPage, customQuery)
-            .then(data => {
-                setItems(data || []);
-                setError(null);
-            })
-            .catch(err => setError(err.message))
-            .finally(() => setLoading(false));
+        if(entity) {
+            setLoading(true);
+            fetchEntity(entity, 0, perPage, customQuery)
+                .then(data => {
+                    setItems(data || []);
+                    setError(null);
+                })
+                .catch(err => setError(err.message))
+                .finally(() => setLoading(false));
+        }
     }, [entity, perPage, customQuery]);
 
     if (loading) return <div style={{ padding: 20 }}>در حال بارگذاری {entity}...</div>;
@@ -99,7 +101,7 @@ let showArrows=true
                     }}
                 >
                     {items.map(p => (
-                        <SplideSlide key={p.id}>
+                        <SplideSlide key={p._id}>
                             <ProductCard product={p} />
                         </SplideSlide>
                     ))}
@@ -110,16 +112,36 @@ let showArrows=true
 
     return (
         <div
-            className={'slider'}
+            className="slider"
             style={{
-                display: 'flex',
-                overflowX: 'auto',
-                gap: '10px',
                 padding: '10px 0',
                 ...style,
             }}
         >
-            {children}
+            <Splide
+                options={{
+                    type: 'slide',
+                    perPage: perPage,
+                    perMove: 1,
+                    gap: '10px',
+                    arrows: showArrows,
+                    pagination: false,
+                    breakpoints: {
+                        1024: {
+                            perPage: Math.min(perPage, 1), // or just 1 if you want to fix it
+                        },
+                        768: {
+                            perPage: Math.min(perPage, 1),
+                        },
+                        480: {
+                            perPage: 1,
+                        },
+                    },
+                }}
+            >
+                {children}
+            </Splide>
         </div>
     );
+
 }

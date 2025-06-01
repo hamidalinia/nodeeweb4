@@ -6,22 +6,31 @@ export default function Layout({
                                    header,
                                    footer,
                                    className = '',
+                                   modeData={
+                                       mode:'light',
+                                       toggleMode: () => {}
+                                   }
                                }: {
     children: React.ReactNode;
     header: any;
     footer: any;
     className?: string;
+    modeData:{
+        mode: 'light' | 'dark';
+        toggleMode: () => void;
+    }
 }) {
+    // console.log("modeData",modeData)
     return (
         <div className={className}>
             <header>
-                <BlockRenderer blocks={header.elements || []} />
+                <BlockRenderer modeData={modeData} blocks={header.elements || []} />
             </header>
 
             <main>{children}</main>
 
             <footer>
-                <BlockRenderer blocks={footer.elements || []} />
+                <BlockRenderer modeData={modeData} blocks={footer.elements || []} />
             </footer>
         </div>
     );

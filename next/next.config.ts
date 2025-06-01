@@ -1,6 +1,8 @@
+import i18nConfig from "./next-i18next.config";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+        ...i18nConfig,
     // output: 'standalone',
 
     /* config options here */

@@ -1,12 +1,14 @@
 // pages/_app.tsx
 import React from 'react';
 import App from 'next/app';
+import { appWithTranslation } from 'next-i18next'
 import type { AppProps } from 'next/app';
 import { Provider } from 'react-redux';
 import { ErrorBoundary } from 'react-error-boundary';
 import { store } from '@/store';
 import ThemedApp from '@/components/ThemedApp';
 import '../styles/globals.css';
+import '../styles/rtl.css';
 import '@splidejs/splide/dist/css/splide.min.css';
 
 
@@ -43,4 +45,4 @@ MyApp.getInitialProps = async (appContext: any) => {
     return { ...appProps, theme };
 };
 
-export default MyApp;
+export default appWithTranslation(MyApp);

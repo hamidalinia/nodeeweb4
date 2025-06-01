@@ -10,6 +10,7 @@ import TheImage from './blocks/TheImage';
 import SearchBar from './blocks/SearchBar';
 import  Navigation  from './blocks/Navigation';
 import  NavigationItem  from './blocks/NavigationItem';
+import  ThemeMode  from './blocks/ThemeMode';
 import  Slider  from './blocks/Slider';
 
 
@@ -23,17 +24,22 @@ type Block = {
 
 type BlockRendererProps = {
     blocks: Block[];
+    modeData?:{
+        mode: 'light' | 'dark';
+        toggleMode: () => void;
+    }
 };
 
-export default function BlockRenderer({ blocks }: BlockRendererProps) {
+export default function BlockRenderer({ blocks,modeData }: BlockRendererProps) {
     return (
         <>
             {blocks?.map(block => {
                 const { id, type, settings, children } = block;
-console.log("type",type)
 
 
                 switch (type) {
+                    case 'thememode':
+                        return <ThemeMode key={id} settings={settings} modeData={modeData as { mode: 'dark' | 'light'; toggleMode: () => void }} />;
                     case 'header':
                         return <Header key={id} settings={settings} />;
                     case 'paragraph':
@@ -55,13 +61,13 @@ console.log("type",type)
                     case 'row':
                         return (
                             <Row key={id} settings={settings}>
-                                <BlockRenderer blocks={children || []} />
+                                <BlockRenderer blocks={children || []} modeData={modeData as { mode: 'dark' | 'light'; toggleMode: () => void }} />
                             </Row>
                         );
                     case 'col':
                         return (
                             <Col key={id} settings={settings}>
-                                <BlockRenderer blocks={children || []} />
+                                <BlockRenderer blocks={children || []} modeData={modeData as { mode: 'dark' | 'light'; toggleMode: () => void }} />
                             </Col>
                         );
                     case 'navigation':
