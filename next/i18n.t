@@ -1,8 +1,8 @@
 // i18n.ts یا i18n.js
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import translationEn from '@/locales/en/translation.json';
-import translationFa from '@/locales/fa/translation.json';
+import translationEn from '@/locales/en/common.json';
+import translationFa from '@/locales/fa/common.json';
 
 i18n
     .use(initReactI18next) // این قسمت خیلی مهمه

@@ -17,12 +17,13 @@ type Props = {
 
 export default function AddToCartButton({ item, variable = false, selectedVariation = null }: Props) {
     const dispatch = useDispatch();
-    const { t,ready } = useTranslation('translation');
+    const { t,ready } = useTranslation('common');
+    // if (!ready) return <></>;
     // console.log(ready)
-    // console.log(t('hello-world'))
+    // console.log(t('Add to cart'))
     const handleAddToCart = () => {
         if (variable && !selectedVariation) {
-            toast.error('Please select a variation');
+            toast.error(t('Please select a variation'));
             return;
         }
 
@@ -58,7 +59,8 @@ export default function AddToCartButton({ item, variable = false, selectedVariat
         };
 
         dispatch(addToCart(payload));
-        toast.success('Added to cart');
+
+        toast.success(t('Added to cart'));
     };
 
     return (

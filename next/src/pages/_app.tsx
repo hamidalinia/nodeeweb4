@@ -1,7 +1,9 @@
 // pages/_app.tsx
 import React from 'react';
 import App from 'next/app';
-import { appWithTranslation } from 'next-i18next'
+import { appWithTranslation } from 'next-i18next';
+import i18n from './../../next-i18next.config';
+// import i18n from './../../i18n';
 import type { AppProps } from 'next/app';
 import { Provider } from 'react-redux';
 import { ErrorBoundary } from 'react-error-boundary';
@@ -45,4 +47,4 @@ MyApp.getInitialProps = async (appContext: any) => {
     return { ...appProps, theme };
 };
 
-export default appWithTranslation(MyApp);
+export default appWithTranslation(MyApp,i18n);

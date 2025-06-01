@@ -3,6 +3,9 @@ import React from 'react';
 import Layout from '@/components/Layout';
 import {fetchEntity} from '@/functions';
 import BlockRenderer from '@/components/BlockRenderer';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { GetServerSidePropsContext } from 'next';
+
 type HomeProps = {
     theme?: any;
     pageData?: { elements?: any[] };
@@ -20,7 +23,8 @@ export default function Home({
     );
 }
 
-export async function getServerSideProps() {
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+    const locale = context.locale ?? 'fa';
     const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
     if (!BASE_URL) {
@@ -85,6 +89,7 @@ export async function getServerSideProps() {
 
     return {
         props: {
+            ...(await serverSideTranslations(locale, ['common'])),
             pageData,
         },
     };
