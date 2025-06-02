@@ -31,3 +31,15 @@
 * {
     font-family: 'Dana';
 }
+.navigation-item-children .navigation-item-children{
+    right:100%;
+    display: none;
+    top:0;
+}
+.navigation-item-children .navigation-item-wrapper:hover > .navigation-item-children{
+    display: block;
+}
+.product-card, .product-card h3{
+    text-align:right;
+    direction:rtl;
+}

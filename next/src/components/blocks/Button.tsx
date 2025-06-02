@@ -1,4 +1,5 @@
 import React from 'react';
+import {ShoppingBasket} from 'lucide-react';
 
 type ButtonProps = {
     settings: {
@@ -16,12 +17,24 @@ type ButtonProps = {
     };
 };
 
-export default function Button({ settings }: ButtonProps) {
+export default function Button({settings}: ButtonProps) {
     const style = settings?.style?.fields || {};
     const action = settings?.content?.fields?.action || '#';
     const iconFont = settings?.content?.fields?.iconFont || '';
     const iconPosition = settings?.content?.fields?.iconPosition || 'left';
-
+    if (action == 'toggleCart') {
+        return (
+            <button
+                href={action}
+                className="cursor-pointer inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                style={style}
+            >
+      <span className="flex items-center gap-2">
+        <ShoppingBasket className="w-4 h-4"/>
+      </span>
+            </button>
+        );
+    }
     return (
         <a
             href={action}

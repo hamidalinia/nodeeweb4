@@ -17,7 +17,7 @@ type Props = {
 
 export default function AddToCartButton({ item, variable = false, selectedVariation = null }: Props) {
     const dispatch = useDispatch();
-    const { t,ready } = useTranslation('common');
+    const { t } = useTranslation('common');
     // if (!ready) return <></>;
     // console.log(ready)
     // console.log(t('Add to cart'))
@@ -66,7 +66,7 @@ export default function AddToCartButton({ item, variable = false, selectedVariat
     return (
         <button
             onClick={handleAddToCart}
-            className="inline-flex items-center justify-center px-5 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="cursor-pointer inline-flex items-center justify-center px-5 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
             type="button"
             aria-label={t('Add to cart')}
             disabled={variable && !selectedVariation}

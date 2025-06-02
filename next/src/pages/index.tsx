@@ -17,7 +17,7 @@ export default function Home({
                                  pageData = { elements: [] }
     , mode, toggleMode }: HomeProps) {
     return (
-        <Layout modeData={{mode,toggleMode}} header={theme.header || { elements: [] }} footer={theme.footer || { elements: [] }} className={"min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white "+((theme?.language=='fa') ? 'rtl' : 'ltr')} >
+        <Layout modeData={{mode,toggleMode}} header={theme?.header || { elements: [] }} footer={theme?.footer || { elements: [] }} className={"min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white "+((theme?.language=='fa') ? 'rtl' : 'ltr')} >
             <BlockRenderer modeData={{mode,toggleMode}} blocks={pageData.elements || []} />
         </Layout>
     );

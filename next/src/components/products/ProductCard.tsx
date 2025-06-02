@@ -9,13 +9,15 @@ import { useSelector } from 'react-redux';
 import type { RootState } from '@/store';
 import { formatPrice } from '@/utils';
 import { getBaseUrl } from '@/constants/config';
+import { useTranslation } from 'next-i18next'
 
 type Props = {
     product: ProductType;
 };
 
 const ProductCard = ({ product }: Props) => {
-    let BaseConfig=getBaseUrl()
+    let BaseConfig=getBaseUrl();
+    const { t,ready } = useTranslation('common');
     BaseConfig='https://asakala.shop'
     const theme = useSelector((state: RootState) => state.theme);
     const [selectedVariation, setSelectedVariation] = useState<ProductCombination | null>(null);
@@ -24,7 +26,7 @@ const ProductCard = ({ product }: Props) => {
             ? BaseConfig+product.thumbnail
             : `${BaseConfig}/${product.thumbnail}`
         : '/default.jpg');
-    const currency = theme.data?.currency || 'تومان';
+    let currency = t(theme.data?.currency) || '';
     const taxRate = theme.data?.tax && theme.data?.taxAmount
         ? 1 + parseFloat(theme.data.taxAmount) / 100
         : 1;
@@ -58,12 +60,12 @@ const ProductCard = ({ product }: Props) => {
 
     // Format prices for display
     const displayPrice = normalizedPrice !== undefined
-        ? PriceFormat(normalizedPrice) : 'قیمت ناموجود';
+        ? PriceFormat(normalizedPrice) : '';
 
     const displaySalePrice = normalizedSalePrice !== undefined
         ? PriceFormat(normalizedSalePrice) : undefined;
 
-    const title = product.title?.fa || 'بدون عنوان';
+    const title = product.title?.fa || '';
     // let imageSrc = product.thumbnail || '/default.jpg';
     //  imageSrc = product.thumbnail
     //     ? product.thumbnail.startsWith('/')
@@ -87,33 +89,37 @@ const ProductCard = ({ product }: Props) => {
                         onError={() => setImgSrc('/default.jpg')}
                     />
                 </div>
-                <h3 className="mt-2 text-lg font-medium line-clamp-2">{title}</h3>
+                <h3 className="mt-2 text-md font-medium line-clamp-3">{title}</h3>
             </Link>
 
-            <div className="mt-2 flex items-center justify-between">
+            <div className="w-full mt-2 flex items-center justify-center">
                 <div className="product-price-wrapper">
                     {displaySalePrice ? (
                         <div className="flex flex-col">
-                            <span className="text-green-600 font-semibold">
-                                {formatPrice(displaySalePrice, currency)}
+                            <span className="text-green-600 font-semibold whitespace-nowrap">
+                                {formatPrice(displaySalePrice, (currency),t)}
                             </span>
                             {normalizedPrice !== normalizedSalePrice && (
-                                <span className="line-through text-sm text-gray-400">
-                                    {formatPrice(displayPrice, currency)}
+                                <span className="line-through text-sm text-gray-400 whitespace-nowrap">
+                                    {formatPrice(displayPrice, (currency),t)}
                                 </span>
                             )}
                         </div>
                     ) : (
-                        <div className="text-gray-800 font-semibold">
-                            {formatPrice(displayPrice, currency)}
+                        <div className="text-gray-800 font-semibold whitespace-nowrap">
+                            {formatPrice(displayPrice, (currency),t)}
                         </div>
                     )}
                 </div>
-                <AddToCartButton
-                    item={product}
-                    variable={product.type === 'variable'}
-                    selectedVariation={selectedVariation}
-                />
+
+            </div>
+            <div className="w-full mt-2 flex items-center justify-center">
+
+            <AddToCartButton
+                item={product}
+                variable={product.type === 'variable'}
+                selectedVariation={selectedVariation}
+            />
             </div>
         </div>
     );

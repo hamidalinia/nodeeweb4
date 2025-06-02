@@ -59,7 +59,7 @@ export default function NavigationItem({ settings, children }: NavigationItemPro
             {React.isValidElement(children) &&
             Array.isArray(blocks) &&
             blocks.length > 0 && (
-                <div className="absolute right-0 top-full mt-1 hidden group-hover:block bg-white border rounded-md shadow-md z-10 min-w-[180px] navigation-item-children">
+                <div className="absolute right-0 top-full hidden group-hover:block bg-white border rounded-md shadow-md z-10 min-w-[180px] navigation-item-children">
                     <div className="flex flex-col">
                         {children}
                     </div>

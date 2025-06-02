@@ -23,15 +23,15 @@ export default function Layout({
     // console.log("modeData",modeData)
     return (
         <div className={className}>
-            <header>
+            {header?.elements && <header>
                 <BlockRenderer modeData={modeData} blocks={header.elements || []} />
-            </header>
+            </header>}
 
             <main>{children}</main>
 
-            <footer>
+            {footer?.elements && <footer>
                 <BlockRenderer modeData={modeData} blocks={footer.elements || []} />
-            </footer>
+            </footer>}
         </div>
     );
 }
