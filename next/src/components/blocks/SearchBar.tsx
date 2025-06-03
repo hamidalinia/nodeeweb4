@@ -24,7 +24,7 @@ export default function SearchBar({ settings }: SearchBarProps) {
         <form
             onSubmit={handleSubmit}
             className="w-full max-w-screen-sm mx-auto"
-            style={{ width: `${colCount * 200}px`, ...style }}
+            style={style }
         >
             <div className="relative">
                 <input

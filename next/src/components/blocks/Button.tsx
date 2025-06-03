@@ -1,5 +1,10 @@
 import React from 'react';
-import {ShoppingBasket} from 'lucide-react';
+import {
+    ShoppingBasket, // already imported
+    LogIn,          // login icon
+    Menu,           // menu/hamburger icon
+    HelpCircle      // support/help icon
+} from 'lucide-react';
 
 type ButtonProps = {
     settings: {
@@ -22,6 +27,46 @@ export default function Button({settings}: ButtonProps) {
     const action = settings?.content?.fields?.action || '#';
     const iconFont = settings?.content?.fields?.iconFont || '';
     const iconPosition = settings?.content?.fields?.iconPosition || 'left';
+    // return action;
+    if (action == 'toggleContact') {
+        return (
+            <button
+                href={action}
+                className="cursor-pointer inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                style={style}
+            >
+      <span className="flex items-center gap-2">
+        <HelpCircle className="w-4 h-4"/>
+      </span>
+            </button>
+        );
+    }
+    if (action == '/login') {
+        return (
+            <button
+                href={action}
+                className="cursor-pointer inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                style={style}
+            >
+      <span className="flex items-center gap-2">
+        <LogIn className="w-4 h-4"/>
+      </span>
+            </button>
+        );
+    }
+    if (action == 'toggleMenu') {
+        return (
+            <button
+                href={action}
+                className="cursor-pointer inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                style={style}
+            >
+      <span className="flex items-center gap-2">
+        <Menu className="w-4 h-4"/>
+      </span>
+            </button>
+        );
+    }
     if (action == 'toggleCart') {
         return (
             <button

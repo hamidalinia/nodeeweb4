@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import ProductCard from '@/components/products/ProductCard';
 import { fetchEntity } from '@/functions/index';
+import TheImage from './TheImage';
 
 // Dynamically import Splide for client-side only
 // const Splide = dynamic(() => import('@splidejs/react-splide').then(mod => mod.Splide), { ssr: false });
@@ -109,7 +110,7 @@ let showArrows=true
             </div>
         );
     }
-
+// console.log("JSON.stringify(children)",(children))
     return (
         <div
             className="slider"
@@ -121,17 +122,17 @@ let showArrows=true
             <Splide
                 options={{
                     type: 'slide',
-                    perPage: perPage,
+                    perPage: 1,
                     perMove: 1,
                     gap: '10px',
                     arrows: showArrows,
                     pagination: false,
                     breakpoints: {
                         1024: {
-                            perPage: Math.min(perPage, 1), // or just 1 if you want to fix it
+                            perPage: 1, // or just 1 if you want to fix it
                         },
                         768: {
-                            perPage: Math.min(perPage, 1),
+                            perPage: 1,
                         },
                         480: {
                             perPage: 1,
@@ -139,7 +140,14 @@ let showArrows=true
                     },
                 }}
             >
-                {children}
+                {children?.props?.blocks?.length>0 && children?.props?.blocks.map((block, index) =>
+                    block.type === 'image' ? (
+                        <SplideSlide key={index}>
+                             <TheImage settings={block?.settings} />
+                        </SplideSlide>
+                    ) : null
+                )}
+
             </Splide>
         </div>
     );

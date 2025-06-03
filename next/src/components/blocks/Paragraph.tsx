@@ -19,6 +19,6 @@ export default function Paragraph({ settings }: ParagraphProps) {
     const customStyle = style?.fields || {};
 
     return (
-        <p className="text-base text-gray-700 leading-relaxed" style={customStyle} dangerouslySetInnerHTML={{ __html: text }} />
+        <p className="text-base text-gray-700 dark:text-white leading-relaxed" style={customStyle} dangerouslySetInnerHTML={{ __html: text }} />
     );
 }

@@ -41,7 +41,7 @@ export default function Image({ settings }: ImageProps) {
     });
 
     return (
-        <div style={{ position: 'relative', ...style }}>
+        <div style={{ position: 'relative',overflow: 'hidden', ...style }}>
             <img
                 src={src}
                 alt={alt}

@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, {ReactNode} from 'react';
 import Link from 'next/link';
 
 type NavigationItemProps = {
@@ -20,7 +20,7 @@ type ChildWithBlocks = {
 };
 
 
-export default function NavigationItem({ settings, children }: NavigationItemProps) {
+export default function NavigationItem({settings, children}: NavigationItemProps) {
     const style = settings?.style?.fields || {};
     const {
         link = '#',
@@ -36,7 +36,7 @@ export default function NavigationItem({ settings, children }: NavigationItemPro
     return (
         <div
             className="relative group navigation-item-wrapper"
-            style={{ ...style, borderRadius: borderRadious }}
+            style={{...style, borderRadius: borderRadious}}
         >
             {isExternal ? (
                 <a
@@ -59,7 +59,8 @@ export default function NavigationItem({ settings, children }: NavigationItemPro
             {React.isValidElement(children) &&
             Array.isArray(blocks) &&
             blocks.length > 0 && (
-                <div className="absolute right-0 top-full hidden group-hover:block bg-white border rounded-md shadow-md z-10 min-w-[180px] navigation-item-children">
+                <div
+                    className="absolute right-0 top-full hidden group-hover:block bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-md z-10 min-w-[180px] navigation-item-children">
                     <div className="flex flex-col">
                         {children}
                     </div>

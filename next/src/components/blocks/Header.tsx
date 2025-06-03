@@ -22,5 +22,5 @@ export default function Header({ settings }: HeaderProps) {
 
     const Tag = element as keyof JSX.IntrinsicElements;
 
-    return <Tag style={style}>{text}</Tag>;
+    return <Tag style={style} className={`text-gray-900 dark:text-white`}>{text}</Tag>;
 }

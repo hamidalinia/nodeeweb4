@@ -2,12 +2,27 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+.dark\:text-white:where(.dark, .dark *) {
+     color: var(--color-white) !important;
 
+}
+.col-12 {
+    flex: 0 0 auto;
+    width: 100%;
+}
+.col-6 {
+    flex: 0 0 auto;
+    width: 50%;
+}
 .col {
     flex: 1 0;
 }
+
 .product-card{
     max-width: 300px;
+}
+.responsive-menu{
+    display: none !important;
 }
 /*.row {*/
     /*--bs-gutter-x: 1.5rem;*/
@@ -18,14 +33,12 @@
     /*margin-right: 0;*/
     /*margin-top: 0;*/
 /*}*/
-/*.row>* {*/
-    /*flex-shrink: 0;*/
-    /*margin-top: 15px;*/
-    /*max-width: 100%;*/
-    /*padding-left: 0;*/
-    /*padding-right: 0;*/
-    /*width: 100%;*/
-/*}*/
+.row>* {
+    flex-shrink: 0;
+    max-width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+}
 
 /* Custom Splide arrows */
 .splide__arrow {

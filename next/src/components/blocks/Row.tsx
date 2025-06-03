@@ -22,7 +22,7 @@ export default function Row({ settings, children }: RowProps) {
 
 
     return (
-        <div className={`${visibilityClasses} row flex flex-no-wrap gap-4`} style={style}>
+        <div className={`${visibilityClasses} row flex flex-wrap gap-4`} style={style}>
             {/*{JSON.stringify(responsive)}*/}
             {/*{JSON.stringify(visibilityClasses)}*/}
             {children}

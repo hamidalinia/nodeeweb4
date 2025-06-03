@@ -73,7 +73,7 @@ const ProductCard = ({ product }: Props) => {
     //         : `/${product.thumbnail}`
     //     : '/default.jpg';
     return (
-        <div className="product-card rounded-lg border p-3 shadow-sm hover:shadow-md transition cursor-pointer bg-white">
+        <div className="product-card rounded-lg border p-3 shadow-sm hover:shadow-md transition cursor-pointer bg-white dark:bg-gray-900 dark:text-white">
             <Link href={`/product/${product.slug}`} passHref>
                 <div className="relative aspect-square">
                     <img
@@ -96,21 +96,22 @@ const ProductCard = ({ product }: Props) => {
                 <div className="product-price-wrapper">
                     {displaySalePrice ? (
                         <div className="flex flex-col">
-                            <span className="text-green-600 font-semibold whitespace-nowrap">
-                                {formatPrice(displaySalePrice, (currency),t)}
-                            </span>
+      <span className="text-green-600 font-semibold whitespace-nowrap">
+        {formatPrice(displaySalePrice, currency)}
+      </span>
                             {normalizedPrice !== normalizedSalePrice && (
-                                <span className="line-through text-sm text-gray-400 whitespace-nowrap">
-                                    {formatPrice(displayPrice, (currency),t)}
-                                </span>
+                                <span className="line-through text-sm text-gray-400 dark:text-gray-500 whitespace-nowrap">
+          {formatPrice(displayPrice, currency)}
+        </span>
                             )}
                         </div>
                     ) : (
-                        <div className="text-gray-800 font-semibold whitespace-nowrap">
-                            {formatPrice(displayPrice, (currency),t)}
+                        <div className="text-gray-800 dark:text-gray-100 font-semibold whitespace-nowrap">
+                            {formatPrice(displayPrice, currency)}
                         </div>
                     )}
                 </div>
+
 
             </div>
             <div className="w-full mt-2 flex items-center justify-center">
