@@ -84,8 +84,9 @@ export default function BlockRenderer({ blocks,modeData }: BlockRendererProps) {
                         );
                     case 'slider':
                         const products = block.fetchedProducts || [];
+                        const posts = block.fetchedPosts || [];
                         return (
-                            <Slider key={id} settings={settings} products={products} >
+                            <Slider key={id} settings={settings} products={products} posts={posts} >
                                 <BlockRenderer blocks={children || []} />
                             </Slider>
                         );

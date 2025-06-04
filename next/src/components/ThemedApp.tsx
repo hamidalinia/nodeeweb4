@@ -68,6 +68,7 @@ const ThemedApp = ({ Component, pageProps, serverTheme }: ThemedAppProps) => {
         <>
             <Head>
                 <title>AsaKala</title>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
             </Head>
             <Script src="/site_setting/config.js" strategy="beforeInteractive" />
             <Component

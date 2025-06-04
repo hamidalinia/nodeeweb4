@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import ProductCard from '@/components/products/ProductCard';
+import PostCard from '@/components/posts/PostCard';
 import { fetchEntity } from '@/functions/index';
 import TheImage from './TheImage';
 
@@ -24,7 +25,7 @@ type SliderProps = {
     products?: any[]; // ADD THIS
 };
 
-export default function CustomSlider({ settings,products: externalProducts,  children }: React.PropsWithChildren<SliderProps>) {
+export default function CustomSlider({ settings,products: externalProducts,posts: externalPosts,  children }: React.PropsWithChildren<SliderProps>) {
     const style = settings?.style?.fields || {};
     const contentFields = settings?.content?.fields || {};
 
@@ -45,7 +46,7 @@ let showArrows=true
     useEffect(() => {
         if(entity) {
             setLoading(true);
-            fetchEntity(entity, 0, perPage, customQuery)
+            fetchEntity(entity, 0, 10, customQuery)
                 .then(data => {
                     setItems(data || []);
                     setError(null);
@@ -104,6 +105,58 @@ let showArrows=true
                     {items.map(p => (
                         <SplideSlide key={p._id}>
                             <ProductCard product={p} />
+                        </SplideSlide>
+                    ))}
+                </Splide>
+            </div>
+        );
+    }
+    if (entity === 'post') {
+        // SSR fallback - simple grid
+        if (!isClient) {
+            return (
+                <div className={'slider'} style={{
+                    display: 'grid',
+                    gridTemplateColumns: `repeat(${Math.min(perPage, 5)}, 1fr)`,
+                    gap: '10px',
+                    padding: '10px 0',
+                    overflowX: 'auto',
+                    ...style
+                }}>
+                    {externalPosts?.map(p => (
+                            <PostCard key={p._id} post={p} />
+                    ))}
+                </div>
+            );
+        }
+
+        return (
+            <div  className={'slider'} style={{ padding: '10px 0', ...style }}>
+                <Splide
+                    options={{
+                        type: 'slide',
+                        perPage: perPage,
+                        perMove: 1,
+                        gap: '10px',
+                        arrows: showArrows,
+                        // direction: 'rtl',
+                        pagination: false,
+                        breakpoints: {
+                            1024: {
+                                perPage: Math.min(3, perPage),
+                            },
+                            768: {
+                                perPage: Math.min(2, perPage),
+                            },
+                            480: {
+                                perPage: 1,
+                            }
+                        }
+                    }}
+                >
+                    {items.map(p => (
+                        <SplideSlide key={p._id}>
+                            <PostCard post={p} />
                         </SplideSlide>
                     ))}
                 </Splide>

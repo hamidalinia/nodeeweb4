@@ -39,7 +39,17 @@
 .navigation-item-children .navigation-item-wrapper:hover > .navigation-item-children{
     display: block;
 }
+.product-card,.post-card{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
 .product-card, .product-card h3{
+    text-align:right;
+    direction:rtl;
+}
+
+.post-card, .post-card h3{
     text-align:right;
     direction:rtl;
 }

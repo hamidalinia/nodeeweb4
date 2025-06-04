@@ -1,97 +1,139 @@
 // pages/index.tsx
 import React from 'react';
 import Layout from '@/components/Layout';
-import {fetchEntity} from '@/functions';
+import { fetchEntity } from '@/functions';
 import BlockRenderer from '@/components/BlockRenderer';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { GetServerSidePropsContext } from 'next';
 
+// Define proper types for your data structures
+type Block = {
+    type?: string;
+    settings?: {
+        content?: {
+            fields?: {
+                entity?: string;
+            };
+        };
+    };
+    customQuery?: string;
+    children?: Block[];
+    fetchedProducts?: any;
+    fetchedPosts?: any;
+};
+
+type PageData = {
+    elements?: Block[];
+};
+
+type Theme = {
+    header?: { elements: Block[] };
+    footer?: { elements: Block[] };
+    language?: string;
+};
+
 type HomeProps = {
-    theme?: any;
-    pageData?: { elements?: any[] };
+    theme?: Theme;
+    pageData?: PageData;
     mode: 'light' | 'dark';
     toggleMode: () => void;
 };
-export default function Home({
-                                 theme = {},
-                                 pageData = { elements: [] }
-    , mode, toggleMode }: HomeProps) {
+
+const Home: React.FC<HomeProps> = ({
+                                       theme = {},
+                                       pageData = { elements: [] },
+                                       mode,
+                                       toggleMode,
+                                   }) => {
     return (
-        <Layout modeData={{mode,toggleMode}} header={theme?.header || { elements: [] }} footer={theme?.footer || { elements: [] }} className={"min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white "+((theme?.language=='fa') ? 'rtl' : 'ltr')} >
-            <BlockRenderer modeData={{mode,toggleMode}} blocks={pageData.elements || []} />
+        <Layout
+            modeData={{ mode, toggleMode }}
+            header={theme?.header || { elements: [] }}
+            footer={theme?.footer || { elements: [] }}
+            className={`min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white ${
+                theme?.language === 'fa' ? 'rtl' : 'ltr'
+                }`}
+        >
+            <BlockRenderer
+                modeData={{ mode, toggleMode }}
+                blocks={pageData.elements || []}
+            />
         </Layout>
     );
-}
+};
 
-export async function getServerSideProps(context: GetServerSidePropsContext) {
+// Helper function to find sliders by entity type
+const findSlidersByEntity = (blocks: Block[] = [], entityType: string): Block[] => {
+    return blocks.reduce<Block[]>((sliders, block) => {
+        if (
+            block?.type === 'slider' &&
+            block?.settings?.content?.fields?.entity === entityType
+        ) {
+            sliders.push(block);
+        }
+
+        if (Array.isArray(block.children)) {
+            sliders.push(...findSlidersByEntity(block.children, entityType));
+        }
+
+        return sliders;
+    }, []);
+};
+
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
     const locale = context.locale ?? 'fa';
     const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
     if (!BASE_URL) {
-        return { props: { pageData: { elements: [] } } };
+        return {
+            props: {
+                ...(await serverSideTranslations(locale, ['common'])),
+                pageData: { elements: [] },
+            },
+        };
     }
-
-    let pageData = { elements: [] };
 
     try {
         const res = await fetch(`${BASE_URL}/customer/page/home`);
-        pageData = await res.json();
+        const pageData: PageData = await res.json();
 
+        // Find all product and post sliders
+        const productSliders = findSlidersByEntity(pageData.elements, 'product');
+        const postSliders = findSlidersByEntity(pageData.elements, 'post');
 
-        // Helper function to find product sliders
-        const findProductSliders = (blocks: any[]): any[] => {
-            let sliders: any[] = [];
-
-            for (const block of blocks) {
-                // console.log("block",block)
-
-                if (
-                    block?.type === 'slider' &&
-                    block?.settings?.content?.fields?.entity === 'product'
-                ) {
-                    sliders.push(block);
+        // Fetch data for all sliders in parallel
+        await Promise.all([
+            ...productSliders.map(async (block) => {
+                try {
+                    block.fetchedProducts = await fetchEntity('product', 0, 10, '');
+                } catch (err) {
+                    console.error('Error fetching products for slider:', err);
                 }
-
-                // Recursively check children
-                if (Array.isArray(block.children)) {
-                    sliders = sliders.concat(findProductSliders(block.children));
+            }),
+            ...postSliders.map(async (block) => {
+                try {
+                    block.fetchedPosts = await fetchEntity('post', 0, 10, '');
+                } catch (err) {
+                    console.error('Error fetching posts for slider:', err);
                 }
-            }
+            }),
+        ]);
 
-            return sliders;
+        return {
+            props: {
+                ...(await serverSideTranslations(locale, ['common'])),
+                pageData,
+            },
         };
-
-        const productSliders = findProductSliders(pageData.elements);
-
-        // Fetch product data for each customQuery
-        const fetches = productSliders.map(async (block) => {
-
-            try {
-                const query = new URLSearchParams(block.customQuery).toString();
-                // console.log("query",query)
-                const data = await fetchEntity('product',0,10,'')
-
-                // const res = await fetch(`${BASE_URL}/customer/product?${query}`);
-                // const data = await res.json();
-                // console.log("data",data)
-                block.fetchedProducts = data; // attach fetched products to the block
-            } catch (err) {
-                console.error('Error fetching products for slider:', err);
-            }
-        });
-
-        await Promise.all(fetches);
-
-
     } catch (e) {
         console.error('Fetch error:', e);
+        return {
+            props: {
+                ...(await serverSideTranslations(locale, ['common'])),
+                pageData: { elements: [] },
+            },
+        };
     }
+};
 
-    return {
-        props: {
-            ...(await serverSideTranslations(locale, ['common'])),
-            pageData,
-        },
-    };
-}
-
+export default Home;
