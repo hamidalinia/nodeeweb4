@@ -103,6 +103,12 @@ export default [{
     "controller": controller.migrate3to4Template,
 
 },{
+    "path": "/migrate4to5Template",
+    "method": "post",
+    "access": "admin_user",
+    "controller": controller.migrate4to5Template,
+
+},{
     "path": "/migrate3to4Page",
     "method": "post",
     "access": "admin_user",

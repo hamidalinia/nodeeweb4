@@ -59,8 +59,8 @@ var self = ({
             if (generalFields.showInMobile === true) responsiveFields.showInMobile = true;
 
             const settingsObj = {};
-            if (hasStyleFields) settingsObj.style = { fields: styleFields };
-            if (hasContentFields) settingsObj.content = { fields: contentFields };
+            if (hasStyleFields) settingsObj.style = styleFields || {};
+            if (hasContentFields) settingsObj.content =contentFields || {};
             if (Object.keys(responsiveFields).length > 0) settingsObj.responsive = responsiveFields;
 
             const item = {
@@ -148,8 +148,8 @@ var self = ({
             if (generalFields.showInMobile === true) responsiveFields.showInMobile = true;
 
             const settingsObj = {};
-            if (hasStyleFields) settingsObj.style = { fields: styleFields };
-            if (hasContentFields) settingsObj.content = { fields: contentFields };
+            if (hasStyleFields) settingsObj.style =  styleFields || {};
+            if (hasContentFields) settingsObj.content = contentFields ;
             if (Object.keys(responsiveFields).length > 0) settingsObj.responsive = responsiveFields;
 
             const item = {
@@ -185,6 +185,111 @@ var self = ({
             res.status(500).json({ success: false, error: error.message });
         }
     },
+    migrate4to5Template: async function (req, res, next) {
+        const Template = req.mongoose.model('Template');
+
+        function transformElementToItemType(element) {
+            const {
+                id,
+                label,
+                name,
+                addable,
+                settings,
+                children = []
+            } = element;
+
+            const generalFields = settings?.general?.fields || {};
+
+            const cssFieldNames = [
+                "textAlign", "position", "animation", "background", "top", "bottom", "right",
+                "border", "left", "boxShadow", "zIndex", "color", "float", "borderRadius",
+                "direction", "width", "maxWidth", "height", "fontFamily", "maxHeight",
+                "backgroundColor", "margin", "marginTop", "marginBottom", "padding", "fontWeight",
+                "fontSize", "lineHeight", "display", "paddingTop", "paddingBottom", "marginLeft",
+                "marginRight", "paddingLeft", "paddingRight", "flex", "gap", "flexWrap",
+                "flexDirection", "justifyContent", "alignItems", "borderBottom", "backgroundSize",
+                "borderBottomWidth", "borderBottomColor", "borderBottomStyle", "borderTop",
+                "borderLeft", "borderRight", "alignContent", "backgroundImage",
+                "backgroundPosition", "backgroundrepeat", "minHeight", "overflow",
+                "backgroundAttachment", "overflowY", "overflowX"
+            ];
+
+            const styleFields = {};
+            const contentFields = {};
+            let hasStyleFields = false;
+            let hasContentFields = false;
+
+            for (const key in generalFields) {
+                const value = generalFields[key];
+                if (value === undefined || value === null || value === "") continue;
+
+                if (cssFieldNames.includes(key)) {
+                    styleFields[key] = value;
+                    hasStyleFields = true;
+                } else if (key !== "showInDesktop" && key !== "showInMobile") {
+                    contentFields[key] = value;
+                    hasContentFields = true;
+                }
+            }
+
+            const responsiveFields = {};
+            if (generalFields.showInDesktop === true) responsiveFields.showInDesktop = true;
+            if (generalFields.showInMobile === true) responsiveFields.showInMobile = true;
+
+            const settingsObj = {};
+            if (hasStyleFields) settingsObj.style = styleFields;
+            if (hasContentFields) settingsObj.content = contentFields;
+            if (Object.keys(responsiveFields).length > 0) settingsObj.responsive = responsiveFields;
+
+            // Copy other custom settings (style/content) directly if they exist and aren't in 'general'
+            if (settings?.style?.fields) {
+                settingsObj.style = {
+                    ...settingsObj.style,
+                    ...settings.style.fields
+                };
+            }
+            if (settings?.content?.fields) {
+                settingsObj.content = {
+                    ...settingsObj.content,
+                    ...settings.content.fields
+                };
+            }
+
+            const item = {
+                ...(id && { id }),
+                ...(label && { label }),
+                type: name,
+                ...(addable !== undefined && { addable }),
+                ...(Object.keys(settingsObj).length > 0 && { settings: settingsObj }),
+                ...(children.length > 0 && {
+                    children: children.map(transformElementToItemType),
+                }),
+            };
+
+            return item;
+        }
+
+
+        try {
+            const templates = await Template.find({});
+
+            for (const t of templates) {
+                const transformedElements = Array.isArray(t.elements)
+                    ? t.elements.map(transformElementToItemType)
+                    : [];
+// return res.json({elements:transformedElements})
+                await Template.findByIdAndUpdate(t._id, {
+                    $set: { elements: transformedElements }
+                });
+            }
+
+            res.json({ success: true, message: "Templates migrated successfully." });
+        } catch (error) {
+            console.error("Migration failed:", error);
+            res.status(500).json({ success: false, error: error.message });
+        }
+    },
+
     functions: function (req, res, next) {
         let functions = req.functions() || [];
         return res.json(functions);

@@ -1,9 +1,9 @@
 type HRProps = {
-    settings: { style?: { fields?: React.CSSProperties } };
+    settings: { style?: React.CSSProperties; };
 };
 
 export default function HR({ settings }: HRProps) {
-    const style = settings?.style?.fields || {};
+    const style = settings?.style || {};
     // return JSON.stringify(style)
     return <hr style={style} />;
 }

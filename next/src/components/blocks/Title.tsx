@@ -1,23 +1,22 @@
-import React from 'react';
+import type { JSX } from 'react';
+
 
 type TitleProps = {
     settings: {
-        content: {
-            fields: {
-                text: string;
-            };
+        content?: {
+            text?: string;
+            element?: keyof JSX.IntrinsicElements;
         };
-        style?: {
-            fields?: React.CSSProperties;
-        };
+        style?:  React.CSSProperties;
     };
 };
 
 export default function Title({ settings }: TitleProps) {
-    // return JSON.stringify(settings)
-    const { content, style } = settings;
-    const text = content?.fields?.text || '';
-    const customStyle = style?.fields || {};
+    const element = settings?.content?.element || 'h1';
+    const text = settings?.content?.text || '';
+    const style = settings?.style || {};
 
-    return <h2 style={customStyle}>{text}</h2>;
+    const Tag = element as keyof JSX.IntrinsicElements;
+
+    return <Tag style={style} className={`text-gray-900 dark:text-white`}>{text}</Tag>;
 }

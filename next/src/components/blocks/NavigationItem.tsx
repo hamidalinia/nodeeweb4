@@ -3,13 +3,11 @@ import Link from 'next/link';
 
 type NavigationItemProps = {
     settings: {
-        style?: { fields?: React.CSSProperties };
+        style?: React.CSSProperties;
         content?: {
-            fields?: {
                 link?: string;
                 text?: string;
                 borderRadious?: string;
-            };
         };
     };
     children?: ReactNode | null;
@@ -21,12 +19,12 @@ type ChildWithBlocks = {
 
 
 export default function NavigationItem({settings, children}: NavigationItemProps) {
-    const style = settings?.style?.fields || {};
+    const style = settings?.style || {};
     const {
         link = '#',
         text = 'Item',
         borderRadious = '0',
-    } = settings?.content?.fields || {};
+    } = settings?.content || {};
 
     const isExternal = link.startsWith('http');
     const blocks =

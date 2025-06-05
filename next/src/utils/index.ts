@@ -20,20 +20,32 @@ export const NormalizePrice = (p?: string | number): number => {
 
 export function getResponsiveClass(responsive?: ResponsiveSetting): string {
     // Default to true if not specified
+    responsive={
+        showInMobile:null,
+        showInDesktop:null,
+        ...responsive
+    }
     const showInMobile = responsive?.showInMobile === true;
     const showInDesktop = responsive?.showInDesktop === true;
     let prefix= '';
     if (!showInMobile && showInDesktop) {
+        // console.log("!showInMobile && showInDesktop",responsive)
+
         return prefix+' hidden md:flex'; // hidden on mobile, shown on desktop
     }
 
     if (showInMobile && !showInDesktop) {
+        // console.log("showInMobile && !showInDesktop",responsive)
+
         return prefix+' md:hidden'; // shown on mobile, hidden on desktop
     }
 
     if (!showInMobile && !showInDesktop) {
+        // console.log("!showInMobile && !showInDesktop",responsive)
+
         return prefix+' '; // hidden on all devices
     }
+    // console.log("all",responsive)
 
     return prefix+' '; // visible everywhere
 }

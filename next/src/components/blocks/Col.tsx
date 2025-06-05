@@ -3,13 +3,9 @@ import { getResponsiveClass } from '@/utils';
 
 type ColProps = {
     settings: {
-        style?: {
-            fields?: React.CSSProperties;
-        };
+        style?:  React.CSSProperties;
         content?: {
-            fields?: {
                 classes?:string;
-            };
         };
         responsive?: {
             showInMobile?: boolean;
@@ -20,8 +16,8 @@ type ColProps = {
 };
 
 export default function Col({ settings, children }: ColProps) {
-    let classes = settings?.content?.fields?.classes || '';
-    const style = settings?.style?.fields || {};
+    let classes = settings?.content?.classes || '';
+    const style = settings?.style || {};
     const responsive = settings?.responsive;
     const visibilityClasses = getResponsiveClass(responsive);
 

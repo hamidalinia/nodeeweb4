@@ -5,15 +5,15 @@ import { Search } from 'lucide-react';
 
 type SearchBarProps = {
     settings?: {
-        style?: { fields?: React.CSSProperties };
-        content?: { fields?: { colCount?: number } };
+        style?: React.CSSProperties;
+        content?: { colCount?: number };
     };
 };
 
 export default function SearchBar({ settings }: SearchBarProps) {
     const [query, setQuery] = useState('');
-    const style = settings?.style?.fields || {};
-    const colCount = settings?.content?.fields?.colCount || 1;
+    const style = settings?.style || {};
+    const colCount = settings?.content?.colCount || 1;
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();

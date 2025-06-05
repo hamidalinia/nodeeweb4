@@ -4,9 +4,7 @@ import { getResponsiveClass } from '@/utils';
 
 type ThemeModeProps = {
     settings: {
-        style?: {
-            fields?: React.CSSProperties;
-        };
+        style?: React.CSSProperties;
         responsive?: {
             showInMobile?: boolean;
             showInDesktop?: boolean;
@@ -20,7 +18,7 @@ type ThemeModeProps = {
 
 export default function ThemeMode({settings, modeData }: ThemeModeProps) {
     if (!modeData) return null;
-    const style = settings?.style?.fields || {};
+    const style = settings?.style || {};
     const responsive = settings?.responsive || {};
     const visibilityClasses = getResponsiveClass(responsive);
     const { mode, toggleMode } = modeData;

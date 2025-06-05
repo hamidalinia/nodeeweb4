@@ -11,23 +11,23 @@ import TheImage from './TheImage';
 import { Splide, SplideSlide } from '@splidejs/react-splide';
 type SliderProps = {
     settings: {
-        style?: { fields?: React.CSSProperties };
+        style?: React.CSSProperties;
         content?: {
-            fields?: {
+                classes?: string;
                 include?: string;
                 arrows?: boolean;
                 perPage?: string;
                 entity?: string;
                 customQuery?: string;
-            };
         };
     };
     products?: any[]; // ADD THIS
 };
 
 export default function CustomSlider({ settings,products: externalProducts,posts: externalPosts,  children }: React.PropsWithChildren<SliderProps>) {
-    const style = settings?.style?.fields || {};
-    const contentFields = settings?.content?.fields || {};
+    const style = settings?.style || {};
+    const contentFields = settings?.content || {};
+    const classes = settings?.content?.classes || '';
 
     const entity = contentFields.entity || null;
     const perPage = parseInt(contentFields.perPage || '12');
@@ -63,11 +63,10 @@ let showArrows=true
         // SSR fallback - simple grid
         if (!isClient) {
             return (
-                <div className={'slider'} style={{
+                <div className={`slider ${classes}`} style={{
                     display: 'grid',
                     gridTemplateColumns: `repeat(${Math.min(perPage, 5)}, 1fr)`,
                     gap: '10px',
-                    padding: '10px 0',
                     overflowX: 'auto',
                     ...style
                 }}>
@@ -79,7 +78,7 @@ let showArrows=true
         }
 
         return (
-            <div  className={'slider'} style={{ padding: '10px 0', ...style }}>
+            <div  className={`slider ${classes}`} style={{ ...style }}>
                 <Splide
                     options={{
                         type: 'slide',
@@ -115,11 +114,10 @@ let showArrows=true
         // SSR fallback - simple grid
         if (!isClient) {
             return (
-                <div className={'slider'} style={{
+                <div className={`slider ${classes}`} style={{
                     display: 'grid',
                     gridTemplateColumns: `repeat(${Math.min(perPage, 5)}, 1fr)`,
                     gap: '10px',
-                    padding: '10px 0',
                     overflowX: 'auto',
                     ...style
                 }}>
@@ -131,7 +129,7 @@ let showArrows=true
         }
 
         return (
-            <div  className={'slider'} style={{ padding: '10px 0', ...style }}>
+            <div className={`slider ${classes}`} style={{ ...style }}>
                 <Splide
                     options={{
                         type: 'slide',
@@ -166,9 +164,8 @@ let showArrows=true
 // console.log("JSON.stringify(children)",(children))
     return (
         <div
-            className="slider"
+            className={`slider ${classes}`}
             style={{
-                padding: '10px 0',
                 ...style,
             }}
         >

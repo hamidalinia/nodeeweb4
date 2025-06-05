@@ -20,11 +20,13 @@ const ComponentSetting = ({
         border: '',
     };
     console.log("component",component)
-    const styleSettings = _get(component, 'settings.style', { fields: {} });
-    const contentSettings = _get(component, 'settings.content', { fields: {} });
+    const styleSettings = _get(component, 'settings.style', {});
+    const contentSettings = _get(component, 'settings.content', { });
+    const responsiveSettings = _get(component, 'settings.responsive', { showInMobile: undefined ,showInDesktop: undefined});
 
-    const mergedStyleFields = { ...defaultStyleFields, ...styleSettings.fields };
-    const mergedContentFields = contentSettings.fields || {};
+    const mergedStyleFields = { ...defaultStyleFields, ...styleSettings };
+    const mergedContentFields = contentSettings || {};
+    const mergedResponsiveFields = responsiveSettings || {};
     return (
         <Modal
             open={open}
@@ -42,9 +44,10 @@ const ComponentSetting = ({
                     }}
                     styleFields={mergedStyleFields}
                     contentFields={mergedContentFields}
+                    responsiveFields={mergedResponsiveFields}
                     componentType={component.type}
                 >
-                    {component.children}
+                    {component?.children}
                 </ElementForm>
             </div>
         </Modal>

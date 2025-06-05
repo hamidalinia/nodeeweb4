@@ -11,9 +11,7 @@ type Block = {
     type?: string;
     settings?: {
         content?: {
-            fields?: {
                 entity?: string;
-            };
         };
     };
     customQuery?: string;
@@ -76,7 +74,7 @@ const findSlidersByEntity = (blocks: Block[] = [], entityType: string): Block[] 
     return blocks.reduce<Block[]>((sliders, block) => {
         if (
             block?.type === 'slider' &&
-            block?.settings?.content?.fields?.entity === entityType
+            block?.settings?.content?.entity === entityType
         ) {
             sliders.push(block);
         }

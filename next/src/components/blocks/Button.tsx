@@ -8,25 +8,21 @@ import {
 
 type ButtonProps = {
     settings: {
-        style?: {
-            fields?: React.CSSProperties;
-        };
+        style?: React.CSSProperties;
         content?: {
-            fields?: {
                 text?: string;
                 action?: string;
                 iconFont?: string;
                 iconPosition?: 'left' | 'right';
-            };
         };
     };
 };
 
 export default function Button({settings}: ButtonProps) {
-    const style = settings?.style?.fields || {};
-    const action = settings?.content?.fields?.action || '#';
-    const iconFont = settings?.content?.fields?.iconFont || '';
-    const iconPosition = settings?.content?.fields?.iconPosition || 'left';
+    const style = settings?.style || {};
+    const action = settings?.content?.action || '#';
+    const iconFont = settings?.content?.iconFont || '';
+    const iconPosition = settings?.content?.iconPosition || 'left';
     // return action;
     if (action == 'toggleContact') {
         return (
@@ -88,7 +84,7 @@ export default function Button({settings}: ButtonProps) {
         >
       <span className="flex items-center gap-2">
         {iconPosition === 'left' && iconFont && <i className={iconFont}></i>}
-          <span>{settings?.content?.fields?.text}</span>
+          <span>{settings?.content?.text}</span>
           {iconPosition === 'right' && iconFont && <i className={iconFont}></i>}
       </span>
         </a>

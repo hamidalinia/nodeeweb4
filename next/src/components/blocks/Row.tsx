@@ -2,9 +2,10 @@ import React, { ReactNode } from 'react';
 import { getResponsiveClass } from '@/utils';
 
 type RowProps = {
-    settings: {
-        style?: {
-            fields?: React.CSSProperties;
+    settings?: {
+        style?: React.CSSProperties;
+        content?: {
+            classes?: string;
         };
         responsive?: {
             showInMobile?: boolean;
@@ -14,17 +15,19 @@ type RowProps = {
     children: ReactNode;
 };
 
-export default function Row({ settings, children }: RowProps) {
-    const style = settings?.style?.fields || {};
-    const responsive = settings?.responsive || {};
+export default function Row({ settings = {}, children }: RowProps) {
+    // Destructure with defaults
+    const { style = {}, content = {}, responsive = {} } = settings;
+    const { classes = '' } = content;
+
+    // Get visibility classes (always returns valid string)
     const visibilityClasses = getResponsiveClass(responsive);
 
+    // Combine all classes
+    const className = `${visibilityClasses} row flex gap-4 ${classes}`.trim();
 
-    // flex-wrap
     return (
-        <div className={`${visibilityClasses} row flex gap-4`} style={style}>
-            {/*{JSON.stringify(responsive)}*/}
-            {/*{JSON.stringify(visibilityClasses)}*/}
+        <div className={className} style={style}>
             {children}
         </div>
     );

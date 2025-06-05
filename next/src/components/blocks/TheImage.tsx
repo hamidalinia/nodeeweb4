@@ -3,15 +3,12 @@ import {getBaseUrl} from '@/constants/config';
 
 type ImageProps = {
     settings: {
-        style?: {
-            fields?: React.CSSProperties;
-        };
+        style?: React.CSSProperties;
         content?: {
-            fields?: {
+                classes?: string;
                 src?: string;
                 alt?: string;
                 link?: string;
-            };
         };
     };
 };
@@ -19,12 +16,13 @@ type ImageProps = {
 export default function Image({settings}: ImageProps) {
     let BaseConfig = getBaseUrl()
     BaseConfig = 'https://asakala.shop'
-    const style = settings?.style?.fields || {};
-    const width = settings?.style?.fields?.width || undefined;
-    const height = settings?.style?.fields?.width || undefined;
-    let src = settings?.content?.fields?.src || '';
-    const alt = settings?.content?.fields?.alt || 'image';
-    const link = settings?.content?.fields?.link || undefined;
+    const style = settings?.style || {};
+    const width = settings?.style?.width || undefined;
+    const height = settings?.style?.width || undefined;
+    const classes = settings?.content?.classes || '';
+    let src = settings?.content?.src || '';
+    const alt = settings?.content?.alt || 'image';
+    const link = settings?.content?.link || undefined;
     src = src
         ? src.startsWith('/')
             ? BaseConfig + src
@@ -42,7 +40,7 @@ export default function Image({settings}: ImageProps) {
     });
     if (link)
         return (
-            <a href={link} style={{display:'block',position: 'relative', overflow: 'hidden', ...style}}>
+            <a className={`${classes}`} href={link} style={{display:'block',position: 'relative', overflow: 'hidden', ...style}}>
                 <img
                     src={src}
                     alt={alt}
@@ -56,6 +54,7 @@ export default function Image({settings}: ImageProps) {
         );
     return (
             <img
+                className={`${classes}`}
                 src={src}
                 alt={alt}
                 // layout="responsive"

@@ -115,13 +115,13 @@ const Core = (props) => {
                     ...(updates.content && {
                         content: {
                             ...the_com.settings?.content,
-                            fields: updates.content,
+                          ...updates?.content,
                         },
                     }),
                     ...(updates.style && {
                         style: {
                             ...the_com.settings?.style,
-                            fields: updates.style,
+                          ...updates?.style,
                         },
                     }),
                 },
@@ -157,24 +157,27 @@ const Core = (props) => {
 
 
 
-    const handleDelete = useCallback(
-    (id) => {
-      const newComponents = DeleteItem(id, components);
+  const handleDelete = useCallback((id) => {
+    try {
+      const newComponents = DeleteItem(id, components) || components;
       setState((s) => ({ ...s, components: newComponents }));
-    },
-    [components]
-  );
+    } catch (error) {
+      console.error('Delete failed:', error);
+      notify('Failed to delete component', { type: 'error' });
+    }
+  }, [components, notify]);
 
   const handleAdd = useCallback(
     (item) => {
-      const newComponents = AddNewItem(sourceAddress, components, item);
+      console.log("Adding item to target:", sourceAddress);
+      const newComponents = AddNewItem(sourceAddress || null, components, item);
       setState((s) => ({
         ...s,
         components: newComponents,
         optionBox: false,
       }));
     },
-    [components, sourceAddress]
+    [components, sourceAddress] // Keep sourceAddress dependency
   );
 
   // TODO: fix duplicate ids lead to error, we should regenerate ids
@@ -188,28 +191,80 @@ const Core = (props) => {
 
   const handleDrop = useCallback<OnDropType>(
     (source, dest, order) => {
-      const sourceNodeAddress = FindNodeAddress(components, source.id);
-      const baseNode = _get(components, sourceNodeAddress, {});
-
-      let newComponents = JSON.parse(JSON.stringify(components));
-
-      newComponents = DeleteItem(source.id, newComponents);
-
-      if (order) {
-        if (order === 'last') {
-          newComponents = PushItem(dest.id, newComponents, baseNode);
-        } else if (order === 'middle') {
-          newComponents = AddToIndex(dest.id, newComponents, baseNode);
+      try {
+        // 1. Find the source node path
+        const sourceNodeAddress = FindNodeAddress(components, source.id);
+        if (!sourceNodeAddress) {
+          console.error('Source node not found');
+          return;
         }
-      } else {
-        newComponents = AddInside(dest.id, newComponents, baseNode);
+
+        // 2. Make a deep clone of the components array
+        let newComponents = JSON.parse(JSON.stringify(components));
+
+        // 3. Get the source node using the address
+        const sourcePath = sourceNodeAddress.split(/\.|\[|\]/).filter(Boolean);
+        const sourceNode = sourcePath.reduce((obj, key) => obj[key], newComponents);
+
+        if (!sourceNode) {
+          console.error('Source node could not be retrieved');
+          return;
+        }
+
+        // 4. Remove from old location
+        const deletePath = sourcePath.slice(0, -1); // Remove last index
+        const deleteIndex = sourcePath[sourcePath.length - 1];
+        const parent = deletePath.reduce((obj, key) => obj[key], newComponents);
+        if (Array.isArray(parent)) {
+          parent.splice(deleteIndex, 1);
+        }
+
+        // 5. Add to new location
+        if (order === 'last') {
+          // Add to end of root
+          newComponents.push(sourceNode);
+        } else if (order === 'middle') {
+          // Add between root components
+          const insertIndex = newComponents.findIndex(c => c.id === dest.id);
+          if (insertIndex !== -1) {
+            newComponents.splice(insertIndex, 0, sourceNode);
+          } else {
+            newComponents.push(sourceNode);
+          }
+        } else {
+          // Add as child of destination component
+          const destPath = FindNodeAddress(newComponents, dest.id);
+          if (!destPath) {
+            console.error('Destination node not found');
+            return;
+          }
+
+          const destNode = destPath.split(/\.|\[|\]/)
+            .filter(Boolean)
+            .reduce((obj, key) => obj[key], newComponents);
+
+          if (!destNode) {
+            console.error('Destination node could not be retrieved');
+            return;
+          }
+
+          // Ensure destination has children array
+          if (!destNode.children) {
+            destNode.children = [];
+          }
+
+          // Add to children
+          destNode.children.push(sourceNode);
+        }
+
+        setState(p => ({ ...p, components: newComponents }));
+      } catch (error) {
+        console.error('Drag and drop error:', error);
+        notify('Failed to move component', { type: 'error' });
       }
-
-      setState((p) => ({ ...p, components: newComponents }));
     },
-    [components]
+    [components, notify]
   );
-
   return (
     <LoadingContainer loading={loading} className={translate('direction')}>
       <Header
@@ -266,7 +321,10 @@ const Core = (props) => {
         onClose={(e) => toggleOptionBox({})}
         exclude={excludeArray}
         open={state.optionBox}
-        onAdd={handleAdd}
+        onAdd={(item) => {
+          console.log("Adding item:", item);
+          handleAdd(item);
+        }}
       />
       <ComponentSetting
         // @ts-ignore

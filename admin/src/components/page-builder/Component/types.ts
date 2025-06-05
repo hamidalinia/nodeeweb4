@@ -3,15 +3,11 @@ export type ItemType = {
     label?: string; // Optional for default components
     type: string; // e.g., 'row', 'col', 'image', 'button'
     addable?: boolean; // Only in default options
-    settings?: {
-        content?: { [key: string]: any };
-        style?: { [key: string]: any };
-        responsive?: {
-            showInDesktop?: boolean;
-            showInMobile?: boolean;
-            [key: string]: any;
-        };
-    };
+  settings?: {
+    style?: Record<string, any>;
+    content?: Record<string, any>;
+    responsive?: Record<string, any>;
+  };
     children?: Array<ItemType>; // For nested structures like row > col > component
 };
 
