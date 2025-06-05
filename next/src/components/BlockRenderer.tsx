@@ -19,6 +19,7 @@ type Block = {
     type: string;
     settings: any;
     fetchedProducts: any;
+    fetchedPosts: any;
     children?: Block[];
 };
 

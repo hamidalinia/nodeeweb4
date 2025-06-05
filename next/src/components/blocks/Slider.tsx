@@ -22,6 +22,7 @@ type SliderProps = {
         };
     };
     products?: any[]; // ADD THIS
+    posts?: any[]; // ADD THIS
 };
 
 export default function CustomSlider({ settings,products: externalProducts,posts: externalPosts,  children }: React.PropsWithChildren<SliderProps>) {
