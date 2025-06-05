@@ -20,9 +20,9 @@ export default function Row({ settings, children }: RowProps) {
     const visibilityClasses = getResponsiveClass(responsive);
 
 
-
+    // flex-wrap
     return (
-        <div className={`${visibilityClasses} row flex flex-wrap gap-4`} style={style}>
+        <div className={`${visibilityClasses} row flex gap-4`} style={style}>
             {/*{JSON.stringify(responsive)}*/}
             {/*{JSON.stringify(visibilityClasses)}*/}
             {children}

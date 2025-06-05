@@ -54,6 +54,15 @@ const Home: React.FC<HomeProps> = ({
                 theme?.language === 'fa' ? 'rtl' : 'ltr'
                 }`}
         >
+            {/*<div className=" hidden md:flex row flex flex-wrap gap-4">*/}
+                {/*<div className="  col  md:w-8/12" ><a href="/product-category/skin-care"*/}
+                                                                       {/*><img*/}
+                    {/*src="https://asakala.shop/customer/2024-9-28-11-24-15bannerrrrr1.webp" alt="image"*/}
+                   {/*/></a></div>*/}
+                {/*<div className="  col  md:w-4/12"><a href="/product-category/cosmetics"><img*/}
+                    {/*src="https://asakala.shop/customer/2024-9-28-11-16-38bannerr2-3.webp" alt="image"*/}
+                    {/*/></a></div>*/}
+            {/*</div>*/}
             <BlockRenderer
                 modeData={{ mode, toggleMode }}
                 blocks={pageData.elements || []}

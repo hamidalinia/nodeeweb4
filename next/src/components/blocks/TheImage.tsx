@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
-import NextImage from 'next/image';
-import { getBaseUrl } from '@/constants/config';
+import React, {useState} from 'react';
+import {getBaseUrl} from '@/constants/config';
 
 type ImageProps = {
     settings: {
@@ -11,23 +10,25 @@ type ImageProps = {
             fields?: {
                 src?: string;
                 alt?: string;
+                link?: string;
             };
         };
     };
 };
 
-export default function Image({ settings }: ImageProps) {
-    let BaseConfig=getBaseUrl()
-    BaseConfig='https://asakala.shop'
+export default function Image({settings}: ImageProps) {
+    let BaseConfig = getBaseUrl()
+    BaseConfig = 'https://asakala.shop'
     const style = settings?.style?.fields || {};
     const width = settings?.style?.fields?.width || undefined;
     const height = settings?.style?.fields?.width || undefined;
     let src = settings?.content?.fields?.src || '';
     const alt = settings?.content?.fields?.alt || 'image';
-    src=src
+    const link = settings?.content?.fields?.link || undefined;
+    src = src
         ? src.startsWith('/')
-        ? BaseConfig+src
-        : `${BaseConfig}/${src}`
+            ? BaseConfig + src
+            : `${BaseConfig}/${src}`
         : '/default.jpg'
     const [imgSrc, setImgSrc] = useState(() => {
         const baseUrlFromWindow = typeof window !== 'undefined' && (window as any).BASE_URL;
@@ -39,9 +40,21 @@ export default function Image({ settings }: ImageProps) {
 
         return `${baseUrl.replace(/\/$/, '')}/${src.replace(/^\//, '')}`;
     });
-
+    if (link)
+        return (
+            <a href={link} style={{display:'block',position: 'relative', overflow: 'hidden', ...style}}>
+                <img
+                    src={src}
+                    alt={alt}
+                    // layout="responsive"
+                    width={width ? width : undefined}
+                    height={height ? height : undefined}
+                    onError={() => setImgSrc('/default.jpg')}
+                    style={{objectFit: 'cover'}}
+                />
+            </a>
+        );
     return (
-        <div style={{ position: 'relative',overflow: 'hidden', ...style }}>
             <img
                 src={src}
                 alt={alt}
@@ -49,8 +62,20 @@ export default function Image({ settings }: ImageProps) {
                 width={width ? width : undefined}
                 height={height ? height : undefined}
                 onError={() => setImgSrc('/default.jpg')}
-                style={{ objectFit: 'cover' }}
+                style={{display:'block',position: 'relative', overflow: 'hidden', ...style}}
             />
-        </div>
     );
+    // return (
+    //     <div style={{position: 'relative', overflow: 'hidden', ...style}}>
+    //         <img
+    //             src={src}
+    //             alt={alt}
+    //             // layout="responsive"
+    //             width={width ? width : undefined}
+    //             height={height ? height : undefined}
+    //             onError={() => setImgSrc('/default.jpg')}
+    //             style={{objectFit: 'cover'}}
+    //         />
+    //     </div>
+    // );
 }

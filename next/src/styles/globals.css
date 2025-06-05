@@ -1,20 +1,46 @@
+/*@tailwind base;*/
+/*@tailwind components;*/
+/*@tailwind utilities;*/
+
+/*@tailwind base;*/
+/*@tailwind components;*/
+/*@tailwind utilities;*/
 @import "tailwindcss";
+@import "tailwindcss/utilities";
+/*@import "tailwindcss/utilities" screen;*/
 @custom-variant dark (&:where(.dark, .dark *));
+
+
+@theme {
+    --color-primary: 59 130 246;
+}
+
+@dark {
+    .text-primary {
+        color: rgb(var(--color-primary));
+    }
+
+    .bg-background {
+        background-color: theme(colors.slate.900);
+    }
+}
+
+
 
 .dark\:text-white:where(.dark, .dark *) {
      color: var(--color-white) !important;
 
 }
 .col-12 {
-    flex: 0 0 auto;
-    width: 100%;
+    /*flex: 0 0 auto;*/
+    /*width: 100%;*/
 }
 .col-6 {
-    flex: 0 0 auto;
-    width: 50%;
+    /*flex: 0 0 auto;*/
+    /*width: 50%;*/
 }
 .col {
-    flex: 1 0;
+    /*flex: 1 0;*/
 }
 
 .product-card{
@@ -32,13 +58,18 @@
     /*margin-right: 0;*/
     /*margin-top: 0;*/
 /*}*/
-.row>* {
-    flex-shrink: 0;
+/*.row>* {*/
+    /*flex-shrink: 0;*/
+    /*max-width: 100%;*/
+    /*padding-left: 0;*/
+    /*padding-right: 0;*/
+/*}*/
+.slider{
     max-width: 100%;
-    padding-left: 0;
-    padding-right: 0;
 }
+.row.flex{
 
+}
 /* Custom Splide arrows */
 .splide__arrow {
     background: rgba(0,0,0,0.5) !important;
