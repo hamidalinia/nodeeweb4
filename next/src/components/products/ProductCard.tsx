@@ -10,6 +10,7 @@ import type { RootState } from '@/store';
 import { formatPrice } from '@/utils';
 import { getBaseUrl } from '@/constants/config';
 import { useTranslation } from 'next-i18next'
+import TheImage from '@/components/blocks/TheImage'; // Adjust path if needed
 
 type Props = {
     product: ProductType;
@@ -77,18 +78,17 @@ const ProductCard = ({ product }: Props) => {
         <div className="product-card rounded-lg border p-3 shadow-sm hover:shadow-md transition cursor-pointer bg-white dark:bg-gray-900 dark:text-white">
             <Link href={`/product/${product.slug}`} passHref>
                 <div className="relative aspect-square">
-                    <img
-                        src={imgSrc}
-                        alt={title}
-                        // fill
-                        className="rounded-md object-cover"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        // onError={(e) => {
-                        //     const target = e.target as HTMLImageElement;
-                        //     target.src = '/default.jpg';
-                        // }}
-                        onError={() => setImgSrc('/default.jpg')}
+                    <TheImage
+                        settings={{
+                            style: { borderRadius: '0.5rem' },
+                            content: {
+                                classes: 'rounded-md object-cover',
+                                src: product.thumbnail || '/default.jpg',
+                                alt: title,
+                            },
+                        }}
                     />
+
                 </div>
                 <h3 className="mt-2 text-md font-medium line-clamp-3">{title}</h3>
             </Link>

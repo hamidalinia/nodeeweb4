@@ -5,6 +5,7 @@
 
 //local development
 
+// window.BASE_URL = 'https://devapi.asakala.shop';
 window.BASE_URL = 'http://localhost:3002';
 // window.ADMIN_URL = 'http://localhost:3002';
 // window.ADMIN_ROUTE = 'http://localhost:3002/admin';
