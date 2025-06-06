@@ -339,7 +339,7 @@ const Self = {
                 ];
             }
 
-            const item = await Model.findOne(obj, 'access , _id , elements , active , classes , kind , maxWidth , slug , status , updatedAt , createdAt , views , backgroundColor').lean();
+            const item = await Model.findOne(obj, 'access , _id , elements , active , classes , kind , maxWidth , slug , status , updatedAt , createdAt , views , backgroundColor , metatitle , metadescription , title , keywords').lean();
             // console.log("item", item)
             if (!item) {
                 return res.status(404).json({
