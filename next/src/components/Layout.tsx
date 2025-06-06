@@ -1,6 +1,7 @@
 // components/Layout.tsx
+import { useSelector } from 'react-redux';
 import BlockRenderer from './BlockRenderer';
-
+import { RootState } from '@/store';
 export default function Layout({
                                    children,
                                    header,
@@ -20,9 +21,10 @@ export default function Layout({
         toggleMode: () => void;
     }
 }) {
+    const isMenuOpen = useSelector((state: RootState) => state.menu.isMenuOpen);
     // console.log("modeData",modeData)
     return (
-        <div className={className}>
+        <div className={`${className} ${isMenuOpen ? 'menu-open' : 'menu-closed'}`}>
             {header?.elements && <header>
                 <BlockRenderer modeData={modeData} blocks={header.elements || []} />
             </header>}

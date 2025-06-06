@@ -19,7 +19,9 @@ type ThemeModeProps = {
 };
 
 export default function ThemeMode({settings= {}, modeData }: ThemeModeProps) {
+
     if (!modeData) return null;
+    // return 'hi'
     const { style = {}, responsive = {} } = settings;
     const visibilityClasses = getResponsiveClass(responsive);
     const { mode, toggleMode } = modeData;

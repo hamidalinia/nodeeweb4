@@ -46,9 +46,9 @@
 .product-card{
     max-width: 300px;
 }
-.responsive-menu{
-    display: none !important;
-}
+/*.responsive-menu{*/
+    /*display: none !important;*/
+/*}*/
 /*.row {*/
     /*--bs-gutter-x: 1.5rem;*/
     /*--bs-gutter-y: 0;*/
@@ -173,4 +173,73 @@ img{
     justify-content: center;
     display: flex;
     align-items: center;
+}
+/* Base style */
+.responsive-menu {
+    position: fixed;
+    top: 52px;
+    right: -100%;
+    height: 100vh;
+    width: 80%;
+    max-width: 300px;
+    background-color: #193a6f;
+    display: flex;
+    flex-direction: column !important;
+    gap: 10px;
+    padding: 2rem 1rem;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.3);
+    transition: right 0.3s ease-in-out;
+    z-index: 1000;
+}
+
+/* Show menu on mobile when .menu-open is on wrapper */
+.menu-open .responsive-menu {
+    right: 0;
+}
+
+/* Backdrop (optional, for better UX) */
+.menu-open::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 900;
+}
+
+/* Navigation items */
+.responsive-menu .navigation-item-wrapper > a {
+    color: #fff;
+    text-decoration: none;
+    padding: 12px;
+    border-radius: 6px;
+    background-color: #145399;
+    transition: background-color 0.2s;
+}
+
+.responsive-menu .navigation-item-wrapper > a:hover {
+    background-color: #1a5fb4;
+}
+
+/* Dropdowns inside */
+.responsive-menu .navigation-item-children {
+    display: none;
+    flex-direction: column;
+    background: #fff;
+    border-radius: 6px;
+    margin-top: 5px;
+    padding: 8px;
+}
+
+.responsive-menu .group.open .navigation-item-children {
+    display: flex;
+}
+
+/* Responsive only on small screens */
+@media (min-width: 769px) {
+    .responsive-menu {
+        display: none !important;
+    }
 }

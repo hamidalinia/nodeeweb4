@@ -1,4 +1,9 @@
 import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@/store';
+import { useRouter } from 'next/router';
+import { toggleMenu } from '@/store/slices/menuSlice';
+
 import {
     ShoppingBasket, // already imported
     LogIn,          // login icon
@@ -25,12 +30,14 @@ export default function Button({settings}: ButtonProps) {
     const classes = settings?.content?.classes || '';
     const iconFont = settings?.content?.iconFont || '';
     const iconPosition = settings?.content?.iconPosition || 'left';
-    const className=classes
+    const className=classes;
+    const dispatch = useDispatch();
+    const isMenuOpen = useSelector((state: RootState) => state.menu.isMenuOpen);
+    const router = useRouter();
     // return action;
     if (action == 'toggleContact') {
         return (
             <button
-                // href={action}
                 className={`${className} cursor-pointer inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition`}
                 style={style}
             >
@@ -43,7 +50,7 @@ export default function Button({settings}: ButtonProps) {
     if (action == '/login') {
         return (
             <button
-                // href={action}
+                onClick={() => router.push('/login')}
                 className={`${className} cursor-pointer inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition`}
                 style={style}
             >
@@ -57,6 +64,7 @@ export default function Button({settings}: ButtonProps) {
         return (
             <button
                 // href={action}
+                onClick={() => dispatch(toggleMenu())}
                 className={`${className} cursor-pointer inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition`}
                 style={style}
             >

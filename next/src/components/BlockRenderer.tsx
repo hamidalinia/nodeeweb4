@@ -41,6 +41,7 @@ export default function BlockRenderer({ blocks,modeData }: BlockRendererProps) {
 
                 switch (type) {
                     case 'thememode':
+                        console.log("settings",settings,modeData)
                         return <ThemeMode key={id} settings={settings} modeData={modeData as { mode: 'dark' | 'light'; toggleMode: () => void }} />;
                     case 'header':
                         return <Header key={id} settings={settings} />;
@@ -71,15 +72,16 @@ export default function BlockRenderer({ blocks,modeData }: BlockRendererProps) {
                             </Col>
                         );
                     case 'navigation':
+                        console.log("settings",settings,children)
                         return (
                             <Navigation key={id} settings={settings}>
-                                <BlockRenderer blocks={children || []} />
+                                <BlockRenderer blocks={children || []} modeData={modeData as { mode: 'dark' | 'light'; toggleMode: () => void }} />
                             </Navigation>
                         );
                     case 'navigationitem':
                         return (
                             <NavigationItem key={id} settings={settings}>
-                                <BlockRenderer blocks={children || []} />
+                                <BlockRenderer blocks={children || []} modeData={modeData as { mode: 'dark' | 'light'; toggleMode: () => void }} />
                             </NavigationItem>
                         );
                     case 'slider':
