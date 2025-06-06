@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {getBaseUrl} from '@/constants/config';
 
 type ImageProps = {
-    settings: {
+    settings?: {
         style?: React.CSSProperties;
         content?: {
                 classes?: string;

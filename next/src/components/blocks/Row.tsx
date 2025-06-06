@@ -22,9 +22,9 @@ export default function Row({ settings = {}, children }: RowProps) {
 
     // Get visibility classes (always returns valid string)
     const visibilityClasses = getResponsiveClass(responsive);
-
+    const hasBgClass = style.backgroundColor ? 'has-bg' : '';
     // Combine all classes
-    const className = `${visibilityClasses} row flex gap-4 ${classes}`.trim();
+    const className = `${visibilityClasses} row flex gap-4 ${classes} ${hasBgClass}`.trim();
 
     return (
         <div className={className} style={style}>

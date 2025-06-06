@@ -2,7 +2,7 @@ import React from 'react';
 
 type ParagraphProps = {
     settings: {
-        content: {
+        content?: {
                 text: string;
                 link: string;
         };

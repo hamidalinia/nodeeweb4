@@ -1,5 +1,5 @@
 type HRProps = {
-    settings: { style?: React.CSSProperties; };
+    settings?: { style?: React.CSSProperties; };
 };
 
 export default function HR({ settings }: HRProps) {

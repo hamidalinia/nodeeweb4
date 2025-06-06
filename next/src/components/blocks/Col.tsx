@@ -2,7 +2,7 @@ import React, { ReactNode } from 'react';
 import { getResponsiveClass } from '@/utils';
 
 type ColProps = {
-    settings: {
+    settings?: {
         style?:  React.CSSProperties;
         content?: {
                 classes?:string;

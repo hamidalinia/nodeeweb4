@@ -2,7 +2,7 @@ import type { JSX } from 'react';
 
 
 type TitleProps = {
-    settings: {
+    settings?: {
         content?: {
             text?: string;
             element?: keyof JSX.IntrinsicElements;

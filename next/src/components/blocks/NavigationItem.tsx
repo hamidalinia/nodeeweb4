@@ -2,7 +2,7 @@ import React, {ReactNode} from 'react';
 import Link from 'next/link';
 
 type NavigationItemProps = {
-    settings: {
+    settings?: {
         style?: React.CSSProperties;
         content?: {
                 link?: string;

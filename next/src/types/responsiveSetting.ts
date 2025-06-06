@@ -1,4 +1,4 @@
 export type ResponsiveSetting = {
-    showInMobile?: boolean;
-    showInDesktop?: boolean;
+    showInMobile?: boolean | null;
+    showInDesktop?: boolean | null;
 };

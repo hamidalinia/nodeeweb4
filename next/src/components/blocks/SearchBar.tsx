@@ -2,18 +2,29 @@
 
 import React, { useState } from 'react';
 import { Search } from 'lucide-react';
+import { getResponsiveClass } from '@/utils';
 
 type SearchBarProps = {
     settings?: {
         style?: React.CSSProperties;
-        content?: { colCount?: number };
+        content?: { colCount?: number;
+            classes?: string;
+        };
+        responsive?: {
+            showInMobile?: boolean;
+            showInDesktop?: boolean;
+        };
     };
 };
 
 export default function SearchBar({ settings }: SearchBarProps) {
     const [query, setQuery] = useState('');
     const style = settings?.style || {};
+    const responsive = settings?.responsive || {};
     const colCount = settings?.content?.colCount || 1;
+    const classes = settings?.content?.classes || '';
+    const visibilityClasses = getResponsiveClass(responsive);
+    const className = `${visibilityClasses} w-full max-w-screen-sm mx-auto ${classes}`.trim();
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -22,8 +33,8 @@ export default function SearchBar({ settings }: SearchBarProps) {
 
     return (
         <form
+            className={className}
             onSubmit={handleSubmit}
-            className="w-full max-w-screen-sm mx-auto"
             style={style }
         >
             <div className="relative">

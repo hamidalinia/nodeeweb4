@@ -111,6 +111,7 @@
 .splide__slide {
     display: flex;
     height: auto;
+    justify-content: center;
 }
 
 
@@ -155,4 +156,19 @@
     /*}*/
 /*}*/
 .row.flex{
+}
+.add-to-cart-button{
+    font-size: 13px;
+    padding: 5px 15px;
+}
+
+.dark .row.has-bg {
+    background-color: #1e1e1e !important; /* dark background */
+    /* you can also add color: #fff or other styles if needed */
+}
+.center-button{
+    text-align: center;
+    justify-content: center;
+    display: flex;
+    align-items: center;
 }

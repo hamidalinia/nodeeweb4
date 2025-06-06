@@ -7,9 +7,10 @@ import {
 } from 'lucide-react';
 
 type ButtonProps = {
-    settings: {
+    settings?: {
         style?: React.CSSProperties;
         content?: {
+                classes?: string;
                 text?: string;
                 action?: string;
                 iconFont?: string;
@@ -21,14 +22,16 @@ type ButtonProps = {
 export default function Button({settings}: ButtonProps) {
     const style = settings?.style || {};
     const action = settings?.content?.action || '#';
+    const classes = settings?.content?.classes || '';
     const iconFont = settings?.content?.iconFont || '';
     const iconPosition = settings?.content?.iconPosition || 'left';
+    const className=classes
     // return action;
     if (action == 'toggleContact') {
         return (
             <button
                 // href={action}
-                className="cursor-pointer inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                className={`${className} cursor-pointer inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition`}
                 style={style}
             >
       <span className="flex items-center gap-2">
@@ -41,7 +44,7 @@ export default function Button({settings}: ButtonProps) {
         return (
             <button
                 // href={action}
-                className="cursor-pointer inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                className={`${className} cursor-pointer inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition`}
                 style={style}
             >
       <span className="flex items-center gap-2">
@@ -54,7 +57,7 @@ export default function Button({settings}: ButtonProps) {
         return (
             <button
                 // href={action}
-                className="cursor-pointer inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                className={`${className} cursor-pointer inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition`}
                 style={style}
             >
       <span className="flex items-center gap-2">
@@ -67,7 +70,7 @@ export default function Button({settings}: ButtonProps) {
         return (
             <button
                 // href={action}
-                className="cursor-pointer inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                className={`${className} cursor-pointer inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition`}
                 style={style}
             >
       <span className="flex items-center gap-2">
@@ -79,7 +82,7 @@ export default function Button({settings}: ButtonProps) {
     return (
         <a
             href={action}
-            className="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+            className={`${className} inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition`}
             style={style}
         >
       <span className="flex items-center gap-2">

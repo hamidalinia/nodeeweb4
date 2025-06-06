@@ -37,7 +37,7 @@ const ComponentSetting = ({
             <div className={cls.container}>
                 <ElementForm
                     onSubmit={(updatedSettings) => {
-                        console.log("on submit",updatedSettings)
+                        console.log("on submit",component,updatedSettings)
                         // updatedSettings = { style: {...}, content: {...} }
                         onSubmit(component, updatedSettings);
                         onClose();

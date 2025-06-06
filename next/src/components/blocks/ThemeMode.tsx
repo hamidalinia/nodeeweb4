@@ -1,13 +1,15 @@
 import { Moon, Sun } from "lucide-react";
 import React from "react";
 import { getResponsiveClass } from '@/utils';
+import { Block } from '@/types/block';
 
 type ThemeModeProps = {
-    settings: {
+    settings?: {
+        content?: any;
         style?: React.CSSProperties;
         responsive?: {
-            showInMobile?: boolean;
-            showInDesktop?: boolean;
+            showInMobile?: boolean | null;
+            showInDesktop?: boolean | null;
         };
     };
     modeData?: {
@@ -16,10 +18,9 @@ type ThemeModeProps = {
     };
 };
 
-export default function ThemeMode({settings, modeData }: ThemeModeProps) {
+export default function ThemeMode({settings= {}, modeData }: ThemeModeProps) {
     if (!modeData) return null;
-    const style = settings?.style || {};
-    const responsive = settings?.responsive || {};
+    const { style = {}, responsive = {} } = settings;
     const visibilityClasses = getResponsiveClass(responsive);
     const { mode, toggleMode } = modeData;
     const isDark = mode === "dark";

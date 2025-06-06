@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,ReactElement,isValidElement } from 'react';
 import dynamic from 'next/dynamic';
 import ProductCard from '@/components/products/ProductCard';
 import PostCard from '@/components/posts/PostCard';
@@ -10,7 +10,7 @@ import TheImage from './TheImage';
 // const SplideSlide = dynamic(() => import('@splidejs/react-splide').then(mod => mod.SplideSlide), { ssr: false });
 import { Splide, SplideSlide } from '@splidejs/react-splide';
 type SliderProps = {
-    settings: {
+    settings?: {
         style?: React.CSSProperties;
         content?: {
                 classes?: string;
@@ -39,7 +39,17 @@ let showArrows=true
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [isClient, setIsClient] = useState(false);
+    const getBlocks = () => {
+        // 1. Check if children is a valid React element
+        if (!children || !React.isValidElement(children)) return [];
 
+        // 2. Check if children has props and blocks property
+        const childProps = children.props as { blocks?: any[] };
+        if (!childProps || !childProps.blocks) return [];
+
+        // 3. Verify blocks is an array
+        return Array.isArray(childProps.blocks) ? childProps.blocks : [];
+    };
     useEffect(() => {
         setIsClient(typeof window !== 'undefined');
     }, []);
@@ -91,13 +101,13 @@ let showArrows=true
                         pagination: false,
                         breakpoints: {
                             1024: {
-                                perPage: Math.min(3, perPage),
+                                perPage: Math.min(4, perPage),
                             },
                             768: {
-                                perPage: Math.min(2, perPage),
+                                perPage: Math.min(3, perPage),
                             },
                             480: {
-                                perPage: 1,
+                                perPage: 2,
                             }
                         }
                     }}
@@ -142,13 +152,13 @@ let showArrows=true
                         pagination: false,
                         breakpoints: {
                             1024: {
-                                perPage: Math.min(3, perPage),
+                                perPage: Math.min(4, perPage),
                             },
                             768: {
-                                perPage: Math.min(2, perPage),
+                                perPage: Math.min(3, perPage),
                             },
                             480: {
-                                perPage: 1,
+                                perPage: 2,
                             }
                         }
                     }}
@@ -162,6 +172,7 @@ let showArrows=true
             </div>
         );
     }
+    const blocks = getBlocks();
 // console.log("JSON.stringify(children)",(children))
     return (
         <div
@@ -191,14 +202,29 @@ let showArrows=true
                     },
                 }}
             >
-                {children?.props?.blocks?.length>0 && children?.props?.blocks.map((block, index) =>
+                {/*{children?.props?.blocks?.length>0 && children?.props?.blocks.map((block, index) =>*/}
+                    {/*block.type === 'image' ? (*/}
+                        {/*<SplideSlide key={index}>*/}
+                             {/*<TheImage settings={block?.settings} />*/}
+                        {/*</SplideSlide>*/}
+                    {/*) : null*/}
+                {/*)}*/}
+                {/*{isValidElement(children) && children.props?.blocks?.length > 0*/}
+                    {/*? children.props.blocks.map((block: any, index: number) =>*/}
+                        {/*block.type === 'image' ? (*/}
+                            {/*<SplideSlide key={index}>*/}
+                                {/*<TheImage settings={block?.settings} />*/}
+                            {/*</SplideSlide>*/}
+                        {/*) : null*/}
+                    {/*)*/}
+                    {/*: null}*/}
+                {blocks.length > 0 && blocks.map((block, index) =>
                     block.type === 'image' ? (
                         <SplideSlide key={index}>
-                             <TheImage settings={block?.settings} />
+                            <TheImage settings={block?.settings} />
                         </SplideSlide>
                     ) : null
                 )}
-
             </Splide>
         </div>
     );

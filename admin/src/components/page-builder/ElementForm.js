@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 
-
 const ElementForm = ({
                        styleFields,
                        contentFields,
@@ -8,19 +7,16 @@ const ElementForm = ({
                        onSubmit
                      }) => {
   const [activeTab, setActiveTab] = useState("content");
-
-  // Keep local state for both style and content values (initialize from props)
   const [styleValues, setStyleValues] = useState(styleFields);
   const [contentValues, setContentValues] = useState(contentFields);
   const [responsiveValues, setResponsiveValues] = useState(responsiveFields);
-
-  // For adding new field
   const [newFieldName, setNewFieldName] = useState("");
 
   // Change handlers
   const handleStyleChange = (key, value) => {
     setStyleValues((prev) => ({ ...prev, [key]: value }));
   };
+
   const handleResponsiveChange = (key, value) => {
     setResponsiveValues((prev) => ({ ...prev, [key]: value }));
   };
@@ -41,13 +37,26 @@ const ElementForm = ({
       if (!(newFieldName in responsiveValues)) {
         setResponsiveValues((prev) => ({ ...prev, [newFieldName]: "" }));
       }
-    }
-    else {
+    } else {
       if (!(newFieldName in contentValues)) {
         setContentValues((prev) => ({ ...prev, [newFieldName]: "" }));
       }
     }
     setNewFieldName("");
+  };
+
+  // Remove field from active tab
+  const handleRemoveField = (key) => {
+    if (activeTab === "style") {
+      const { [key]: _, ...rest } = styleValues;
+      setStyleValues(rest);
+    } else if (activeTab === "responsive") {
+      const { [key]: _, ...rest } = responsiveValues;
+      setResponsiveValues(rest);
+    } else {
+      const { [key]: _, ...rest } = contentValues;
+      setContentValues(rest);
+    }
   };
 
   const handleSubmit = (e) => {
@@ -59,52 +68,74 @@ const ElementForm = ({
     });
   };
 
-  // Render inputs for fields
-  const renderFields = (values, onChange,k) => {
-    if(k=='responsive'){
-      let c={
-        showInDesktop:null,
-        showInMobile:null,
+  // Render inputs for fields with remove buttons
+  const renderFields = (values, onChange, tabKey) => {
+    if (tabKey === 'responsive') {
+      values = {
+        showInDesktop: null,
+        showInMobile: null,
         ...values
-      }
-      values=c;
-
+      };
     }
+
     return Object.keys(values).map((key) => {
-
       const value = values[key];
-      var isBoolean = typeof value === "boolean";
-      console.log("value",value)
-      if (key === "showInDesktop")
-        isBoolean = true;
-      if (key === "showInMobile")
-        isBoolean = true;
-      return (
-        <div key={key} style={{ marginBottom: 12 }}>
-          {isBoolean && (
-            <input
-              type="checkbox"
-              checked={value}
-              onChange={(e) => onChange(key, e.target.checked)}
-            />)} <label style={{ display: "block", marginBottom: 4 }}>{key}</label>
+      let isBoolean = typeof value === "boolean";
 
-          {!isBoolean && (
-            <input
-              type="text"
-              value={value || ""}
-              onChange={(e) => onChange(key, e.target.value)}
-              style={{ width: "100%", padding: 6 }}
-            />
+      if (key === "showInDesktop" || key === "showInMobile") {
+        isBoolean = true;
+      }
+
+      return (
+        <div key={key} style={{
+          marginBottom: 12,
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px'
+        }}>
+          <div style={{ flex: 1 }}>
+            <label style={{ display: "block", marginBottom: 4 }}>{key}</label>
+            {isBoolean ? (
+              <input
+                type="checkbox"
+                checked={value}
+                onChange={(e) => onChange(key, e.target.checked)}
+              />
+            ) : (
+              <input
+                type="text"
+                value={value || ""}
+                onChange={(e) => onChange(key, e.target.value)}
+                style={{ width: "100%", padding: 6 }}
+              />
+            )}
+          </div>
+
+          {/* Only show remove for non-required fields */}
+          {!['showInDesktop', 'showInMobile'].includes(key) && (
+            <button
+              type="button"
+              onClick={() => handleRemoveField(key)}
+              style={{
+                padding: '4px 8px',
+                background: '#ff4444',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer'
+              }}
+            >
+              ×
+            </button>
           )}
         </div>
       );
     });
   };
 
-
   return (
     <form onSubmit={handleSubmit}>
-      {/* Tabs */}
+      {/* Tabs - unchanged from your original */}
       <div style={{ display: "flex", marginBottom: 20 }}>
         <button
           type="button"
@@ -159,12 +190,12 @@ const ElementForm = ({
           minHeight: 150
         }}
       >
-        {activeTab === "content" && renderFields(contentValues, handleContentChange,'content')}
-        {activeTab === "style" && renderFields(styleValues, handleStyleChange,'style')}
-        {activeTab === "responsive" && renderFields(responsiveValues, handleResponsiveChange,'responsive')}
+        {activeTab === "content" && renderFields(contentValues, handleContentChange, 'content')}
+        {activeTab === "style" && renderFields(styleValues, handleStyleChange, 'style')}
+        {activeTab === "responsive" && renderFields(responsiveValues, handleResponsiveChange, 'responsive')}
       </div>
 
-      {/* Add new field */}
+      {/* Add new field - unchanged from your original */}
       <div style={{ marginTop: 10, display: "flex", gap: 10 }}>
         <input
           type="text"

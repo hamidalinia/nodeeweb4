@@ -1,7 +1,6 @@
 import Button from './blocks/Button';
 import Header from './blocks/Header';
 import Paragraph from './blocks/Paragraph';
-import Footer from './blocks/Footer';
 import Row from './blocks/Row';
 import Col from './blocks/Col';
 import Title from './blocks/Title';
@@ -12,16 +11,17 @@ import  Navigation  from './blocks/Navigation';
 import  NavigationItem  from './blocks/NavigationItem';
 import  ThemeMode  from './blocks/ThemeMode';
 import  Slider  from './blocks/Slider';
-
-
-type Block = {
-    id: string;
-    type: string;
-    settings: any;
-    fetchedProducts: any;
-    fetchedPosts: any;
-    children?: Block[];
-};
+import { Block } from '@/types/block';
+//
+//
+// type Block = {
+//     id: string;
+//     type: string;
+//     settings: any;
+//     fetchedProducts: any;
+//     fetchedPosts: any;
+//     children?: Block[];
+// };
 
 type BlockRendererProps = {
     blocks: Block[];
@@ -47,8 +47,6 @@ export default function BlockRenderer({ blocks,modeData }: BlockRendererProps) {
                         return <Paragraph key={id} settings={settings} />;
                     case 'text':
                         return <Paragraph key={id} settings={settings} />;
-                    case 'footer':
-                        return <Footer key={id} settings={settings} />;
                     case 'hr':
                         return <Hr key={id} settings={settings} />;
                     case 'title':

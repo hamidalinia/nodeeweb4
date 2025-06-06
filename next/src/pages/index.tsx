@@ -5,20 +5,21 @@ import { fetchEntity } from '@/functions';
 import BlockRenderer from '@/components/BlockRenderer';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { GetServerSidePropsContext } from 'next';
+import { Block } from '@/types/block';
 
 // Define proper types for your data structures
-type Block = {
-    type?: string;
-    settings?: {
-        content?: {
-                entity?: string;
-        };
-    };
-    customQuery?: string;
-    children?: Block[];
-    fetchedProducts?: any;
-    fetchedPosts?: any;
-};
+// type Block = {
+//     type?: string;
+//     settings?: {
+//         content?: {
+//                 entity?: string;
+//         };
+//     };
+//     customQuery?: string;
+//     children?: Block[];
+//     fetchedProducts?: any;
+//     fetchedPosts?: any;
+// };
 
 type PageData = {
     elements?: Block[];

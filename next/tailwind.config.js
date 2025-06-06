@@ -108,6 +108,7 @@ module.exports = {
         'md:flex-nowrap',
         'sm:flex-nowrap',
         'flex-wrap',
+        'md:flex-row',
         // add more classes you might use dynamically here
     ],
 };

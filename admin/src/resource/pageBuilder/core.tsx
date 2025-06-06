@@ -103,57 +103,186 @@ const Core = (props) => {
     setState((s) => ({ ...s, optionBox: !s.optionBox, ...extra }));
   }, []);
 
-  //SaveSettingsHere
-    const changeComponentSetting = useCallback(
-        (the_com: ItemType, updates: { content?: Record<string, any>, style?: Record<string, any> }) => {
-            console.log("changeComponentSetting", the_com, updates);
 
-            const updatedComponent = {
-                ...the_com,
-                settings: {
-                    ...the_com.settings,
-                    ...(updates.content && {
-                        content: {
-                            ...the_com.settings?.content,
-                          ...updates?.content,
-                        },
-                    }),
-                    ...(updates.style && {
-                        style: {
-                            ...the_com.settings?.style,
-                          ...updates?.style,
-                        },
-                    }),
-                },
-            };
+  const changeComponentSetting = useCallback(
+    (the_com: ItemType, updates: { content?: Record<string, any>, style?: Record<string, any> }) => {
+      // ... your style merging logic unchanged ...
+// 1) Clone the original style (so we can delete freely)
+      const original = { ...the_com.settings?.style };
 
-            const newComponents = components.map((comp) => {
-                if (comp.id === updatedComponent.id) {
-                    return updatedComponent;
-                } else if (comp.children?.length) {
-                    return {
-                        ...comp,
-                        children: comp.children.map((child) => {
-                            if (child.id === updatedComponent.id) return updatedComponent;
-                            if (child.children?.length) {
-                                return {
-                                    ...child,
-                                    children: child.children.map((grandchild) =>
-                                        grandchild.id === updatedComponent.id ? updatedComponent : grandchild
-                                    ),
-                                };
-                            }
-                            return child;
-                        }),
-                    };
-                }
-                return comp;
-            });
+// 2) If updates.style is provided, iterate over original keys...
+      if (updates.style) {
+        Object.keys(original).forEach((key) => {
+          if (
+            !Object.prototype.hasOwnProperty.call(updates.style!, key) ||
+            updates.style![key] === ''
+          ) {
+            delete original[key];
+          }
+        });
 
-            setState((s) => ({ ...s, components: newComponents }));
+        // 3) Now, for every key in updates.style that is NOT ''
+        //    set/overwrite it on our “original” clone
+        Object.entries(updates.style).forEach(([key, value]) => {
+          if (value !== '') {
+            original[key] = value;
+          }
+        });
+      }
+
+      const style = original;
+
+
+      // Clone original content
+      const originalContent = { ...the_com.settings?.content };
+
+      if (updates.content) {
+        Object.keys(originalContent).forEach((key) => {
+          if (
+            !Object.prototype.hasOwnProperty.call(updates.content!, key) ||
+            updates.content![key] === ''
+          ) {
+            delete originalContent[key];
+          }
+        });
+
+        Object.entries(updates.content).forEach(([key, value]) => {
+          if (value !== '') {
+            originalContent[key] = value;
+          }
+        });
+      }
+
+
+      const originalResponsive = { ...the_com.settings?.responsive };
+
+      if (updates.responsive) {
+        Object.keys(originalResponsive).forEach((key) => {
+          if (
+            !Object.prototype.hasOwnProperty.call(updates.responsive!, key) ||
+            updates.responsive![key] === ''
+          ) {
+            delete originalResponsive[key];
+          }
+        });
+
+        Object.entries(updates.responsive).forEach(([key, value]) => {
+          if (value !== '') {
+            originalResponsive[key] = value;
+          }
+        });
+      }
+
+
+
+      const updatedComponent = {
+        ...the_com,
+        settings: {
+          ...the_com.settings,
+          ...(updates.content && { content: originalContent }),
+          ...(updates.style && { style: style }),
+          ...(updates.responsive && { responsive: originalResponsive }),
         },
-        [components]
-    );
+      };
+
+      // Recursive update function
+      const updateComponentById = (components, updatedComponent) => {
+        return components.map(comp => {
+          if (comp.id === updatedComponent.id) {
+            return updatedComponent;
+          }
+          if (comp.children?.length) {
+            return {
+              ...comp,
+              children: updateComponentById(comp.children, updatedComponent),
+            };
+          }
+          return comp;
+        });
+      };
+
+      const newComponents = updateComponentById(components, updatedComponent);
+      console.log("newComponents", newComponents);
+      setState((s) => ({ ...s, components: newComponents }));
+    },
+    [components]
+  );
+
+
+  //SaveSettingsHere
+//     const changeComponentSetting = useCallback(
+//         (the_com: ItemType, updates: { content?: Record<string, any>, style?: Record<string, any> }) => {
+//             console.log("changeComponentSetting", the_com, updates);
+// console.log("updates.style",updates.style)
+// console.log("the_com.settings?.style",the_com.settings?.style)
+//           const baseStyle = { ...the_com.settings?.style };
+//
+// // Remove any keys from baseStyle where updates.style[key] === ''
+//           Object.entries(updates?.style || {}).forEach(([key, value]) => {
+//             if (value === '') {
+//               delete baseStyle[key]; // completely remove the key
+//             } else {
+//               baseStyle[key] = value; // set/overwrite
+//             }
+//           });
+//
+//           const style = baseStyle;
+//
+//           console.log("style",style)
+//
+//           const updatedComponent = {
+//             ...the_com,
+//             settings: {
+//               ...the_com.settings,
+//
+//               ...(updates.content && {
+//                 content: {
+//                   ...the_com.settings?.content,
+//                   ...updates?.content,
+//                 },
+//               }),
+//
+//               ...(updates.style && {
+//                 style: style,
+//               }),
+//
+//               ...(updates.responsive && {
+//                 responsive: {
+//                   ...the_com.settings?.responsive,
+//                   ...updates?.responsive,
+//                 },
+//               }),
+//             },
+//           };
+// console.log("updatedComponent",updatedComponent)
+//
+//             const newComponents = components.map((comp) => {
+//                 if (comp.id === updatedComponent.id) {
+//                     return updatedComponent;
+//                 } else if (comp.children?.length) {
+//                     return {
+//                         ...comp,
+//                         children: comp.children.map((child) => {
+//                             if (child.id === updatedComponent.id) return updatedComponent;
+//                             if (child.children?.length) {
+//                                 return {
+//                                     ...child,
+//                                     children: child.children.map((grandchild) =>
+//                                         grandchild.id === updatedComponent.id ? updatedComponent : grandchild
+//                                     ),
+//                                 };
+//                             }
+//                             return child;
+//                         }),
+//                     };
+//                 }
+//                 return comp;
+//             });
+// console.log("newComponents",newComponents)
+//             setState((s) => ({ ...s, components: newComponents }));
+//         },
+//         [components]
+//     );
 
 
 
