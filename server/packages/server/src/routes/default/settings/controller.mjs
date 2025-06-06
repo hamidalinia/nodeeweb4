@@ -341,23 +341,9 @@ var self = ({
             if (generalFields.showInMobile === true) responsiveFields.showInMobile = true;
 
             const settingsObj = {};
-            if (hasStyleFields) settingsObj.style = styleFields;
-            if (hasContentFields) settingsObj.content = contentFields;
+            if (hasStyleFields) settingsObj.style =  styleFields || {};
+            if (hasContentFields) settingsObj.content = contentFields ;
             if (Object.keys(responsiveFields).length > 0) settingsObj.responsive = responsiveFields;
-
-            // Copy other custom settings (style/content) directly if they exist and aren't in 'general'
-            if (settings?.style?.fields) {
-                settingsObj.style = {
-                    ...settingsObj.style,
-                    ...settings.style.fields
-                };
-            }
-            if (settings?.content?.fields) {
-                settingsObj.content = {
-                    ...settingsObj.content,
-                    ...settings.content.fields
-                };
-            }
 
             const item = {
                 ...(id && { id }),
@@ -373,26 +359,24 @@ var self = ({
             return item;
         }
 
-
         try {
-            const pages = await Page.findOne({slug:req.params.slug});
+            const t = await Page.findOne({slug:req.params.slug});
 
-
-                const transformedElements = Array.isArray(pages.elements)
-                    ? pages.elements.map(transformElementToItemType)
+                const transformedElements = Array.isArray(t.elements)
+                    ? t.elements.map(transformElementToItemType)
                     : [];
 // return res.json({elements:transformedElements})
-                await Page.findByIdAndUpdate(pages._id, {
+                await Page.findByIdAndUpdate(t._id, {
                     $set: { elements: transformedElements }
                 });
 
-
-            res.json({ success: true, message: "Page migrated successfully." });
+            res.json({ success: true, message: "page migrated successfully." });
         } catch (error) {
             console.error("Migration failed:", error);
             res.status(500).json({ success: false, error: error.message });
         }
     },
+
 
     functions: function (req, res, next) {
         let functions = req.functions() || [];
