@@ -296,7 +296,7 @@ var self = ({
             const {
                 id,
                 label,
-                type,
+                name,
                 addable,
                 settings,
                 children = []
@@ -348,7 +348,7 @@ var self = ({
             const item = {
                 ...(id && { id }),
                 ...(label && { label }),
-                type: type,
+                type: name,
                 ...(addable !== undefined && { addable }),
                 ...(Object.keys(settingsObj).length > 0 && { settings: settingsObj }),
                 ...(children.length > 0 && {
