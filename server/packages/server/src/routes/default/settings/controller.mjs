@@ -382,7 +382,7 @@ var self = ({
                     ? pages.elements.map(transformElementToItemType)
                     : [];
 // return res.json({elements:transformedElements})
-                await Page.findByIdAndUpdate(t._id, {
+                await Page.findByIdAndUpdate(pages._id, {
                     $set: { elements: transformedElements }
                 });
 
