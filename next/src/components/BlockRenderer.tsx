@@ -32,6 +32,7 @@ type BlockRendererProps = {
 };
 
 export default function BlockRenderer({ blocks,modeData }: BlockRendererProps) {
+    console.log("blocks",blocks)
     return (
         <>
             {blocks?.map(block => {

@@ -33,14 +33,15 @@ export default function DynamicPage({
             )}
 
             {/* Optional: include an OG image if you have one */}
-            {pageData?.image && (
-                <meta property="og:image" content={pageData.image} />
-            )}
+            {/*{pageData?.image && (*/}
+                {/*<meta property="og:image" content={pageData.image} />*/}
+            {/*)}*/}
 
             <meta property="og:type" content="website" />
             <meta name="robots" content="index, follow" />
         </Head>
         <Layout modeData={{mode,toggleMode}} header={theme.header || { elements: [] }} footer={theme.footer || { elements: [] }} className="min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white">
+            {JSON.stringify(pageData?.elements)}
             <BlockRenderer  blocks={pageData?.elements || []}
                             modeData={{mode,toggleMode}}
             />
@@ -61,6 +62,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     try {
         const res = await fetch(`${BASE_URL}/customer/page/${slug}`);
         pageData = await res.json();
+        console.log("pageData",pageData)
     } catch (e) {
         console.error('Fetch error:', e);
     }

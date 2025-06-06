@@ -6,6 +6,7 @@ import BlockRenderer from '@/components/BlockRenderer';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { GetServerSidePropsContext } from 'next';
 import { Block } from '@/types/block';
+import Head from 'next/head';
 
 // Define proper types for your data structures
 // type Block = {
@@ -23,6 +24,18 @@ import { Block } from '@/types/block';
 
 type PageData = {
     elements?: Block[];
+    title?: {
+        fa:string;
+    };
+    metatitle?: {
+        fa:string;
+    };
+    metadescription?: {
+        fa:string;
+    };
+    keywords?: {
+        fa:string;
+    };
 };
 
 type Theme = {
@@ -44,7 +57,33 @@ const Home: React.FC<HomeProps> = ({
                                        mode,
                                        toggleMode,
                                    }) => {
+    console.log("pageData",pageData)
     return (
+        <><Head>
+            <title>{pageData?.metatitle?.fa || pageData?.title?.fa}</title>
+
+            {pageData?.metadescription?.fa && (
+                <meta name="description" content={pageData.metadescription.fa} />
+            )}
+
+            {pageData?.keywords?.fa && (
+                <meta name="keywords" content={pageData.keywords.fa} />
+            )}
+
+            <meta property="og:title" content={pageData?.metatitle?.fa || pageData?.title?.fa} />
+
+            {pageData?.metadescription?.fa && (
+                <meta property="og:description" content={pageData.metadescription.fa} />
+            )}
+
+            {/* Optional: include an OG image if you have one */}
+            {/*{pageData?.image && (*/}
+                {/*<meta property="og:image" content={pageData.image} />*/}
+            {/*)}*/}
+
+            <meta property="og:type" content="website" />
+            <meta name="robots" content="index, follow" />
+        </Head>
         <Layout
             modeData={{ mode, toggleMode }}
             header={theme?.header || { elements: [] }}
@@ -66,7 +105,7 @@ const Home: React.FC<HomeProps> = ({
                 modeData={{ mode, toggleMode }}
                 blocks={pageData.elements || []}
             />
-        </Layout>
+        </Layout></>
     );
 };
 

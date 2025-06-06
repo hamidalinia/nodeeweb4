@@ -109,6 +109,18 @@ export default [{
     "controller": controller.migrate4to5Template,
 
 },{
+    "path": "/migrate4to5Page",
+    "method": "post",
+    "access": "admin_user",
+    "controller": controller.migrate4to5Page,
+
+},{
+    "path": "/migrate4to5Page/:slug",
+    "method": "post",
+    "access": "admin_user",
+    "controller": controller.migrate4to5Page,
+
+},{
     "path": "/migrate3to4Page",
     "method": "post",
     "access": "admin_user",
