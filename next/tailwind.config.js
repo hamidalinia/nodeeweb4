@@ -117,6 +117,11 @@ module.exports = {
         'md:grid-cols-3',
         'gap-6',
         'mt-6',
+        'col-span-full',
+        'md:items-center',
+        'md:justify-between',
+        'justify-between',
+        'py-5',
         // add more classes you might use dynamically here
     ],
 };

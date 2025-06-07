@@ -17,7 +17,7 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ breadcrumb }) => {
     const { t,ready } = useTranslation('common');
     const crumbs = breadcrumb?.path || [];
     return (
-            <ol className="text-sm text-gray-600 dark:text-gray-300 mb-4 list-none p-0 inline-flex">
+            <ol className="text-sm text-gray-600 dark:text-gray-300 list-none p-0 inline-flex mb-3">
                 {crumbs.map((crumb, idx) => (
                     <li key={crumb.slug} className="flex items-center">
                         <Link href={crumb.slug}>{t(crumb.name, { defaultValue: crumb.name })}</Link>

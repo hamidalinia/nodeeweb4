@@ -243,3 +243,13 @@ img{
         display: none !important;
     }
 }
+
+
+.show-filter{
+    width: 60px;
+    height: 40px;
+    font-size: 10px;
+    white-space: nowrap;
+    padding: 3px;
+    gap: 2px;
+}

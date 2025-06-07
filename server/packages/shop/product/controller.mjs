@@ -101,6 +101,7 @@ if (!productCategory) {
                 }
 
                 search.productCategory = productCategory._id;
+                breadcrumb.path.push({ name: "All Products", slug: "/products" });
 
                 breadcrumb.path.push({
                     name: productCategory.name[lan] || productCategory.name['en'],
@@ -112,7 +113,7 @@ if (!productCategory) {
 
 
             // Fetch products
-            const query = Product.find(search, 'title slug in_stock quantity thumbnail price salePrice combinations options productCategory')
+            const query = Product.find(search, 'title slug in_stock quantity thumbnail price salePrice combinations options productCategory attributes')
                 .populate('productCategory', '_id slug name')
                 .sort(sort)
                 .skip(offset)
@@ -123,39 +124,125 @@ if (!productCategory) {
                 Product.countDocuments(search)
             ]);
 
-            // res.setHeader("X-Total-Count", count);
 
-            // Generate filters from attributes
-            const allAttributes = await Attributes.find({ status: 'published' });
+            // Generate filters based on both attributes and options
             const attributeFilters = {};
 
-            allAttributes.forEach(attr => {
-                attributeFilters[attr.slug] = {
-                    name: attr.name[lan] || attr.name['en'],
-                    values: attr.values.map(v => ({
-                        slug: v.slug,
-                        name: v.name[lan] || v.name['en']
-                    }))
+            if (products.length > 0) {
+                // Helper function to create valid slugs
+                const createSlug = (str) => {
+                    if (!str || typeof str !== 'string') return null;
+                    const trimmed = str.trim();
+                    if (!trimmed) return null;
+
+                    return trimmed
+                        .toLowerCase()
+                        .replace(/\s+/g, '-')
+                        .replace(/[^a-z0-9\u0600-\u06FF-]+/g, '') // Allow Persian characters
+                        .replace(/-+/g, '-')
+                        .replace(/^-|-$/g, '');
                 };
-            });
+
+                // Process both attributes and options
+                const collectedAttributes = new Map(); // {slug: {name: string, values: Set}}
+
+                products.forEach(product => {
+                    // Process attributes from Attributes collection
+                    if (product.attributes?.length) {
+                        product.attributes.forEach(prodAttr => {
+                            if (!prodAttr.attribute) return;
+
+                            const attr = prodAttr.attribute.toString();
+                            const values = prodAttr.values || [];
+
+                            values.forEach(val => {
+                                if (typeof val === 'string' && val.trim()) {
+                                    const slug = createSlug(val);
+                                    if (!slug) return;
+
+                                    if (!collectedAttributes.has(attr)) {
+                                        collectedAttributes.set(attr, {
+                                            name: val, // Will be replaced later
+                                            values: new Set()
+                                        });
+                                    }
+                                    collectedAttributes.get(attr).values.add(slug);
+                                }
+                            });
+                        });
+                    }
+
+                    // Process product options
+                    if (product.options?.length) {
+                        product.options.forEach(option => {
+                            const optionName = option.name?.trim();
+                            if (!optionName) return;
+
+                            const optionSlug = createSlug(optionName);
+                            if (!optionSlug) return;
+
+                            // Initialize if needed
+                            if (!collectedAttributes.has(optionSlug)) {
+                                collectedAttributes.set(optionSlug, {
+                                    name: optionName,
+                                    values: new Set()
+                                });
+                            }
+
+                            const optionValues = collectedAttributes.get(optionSlug).values;
+
+                            // Collect valid option values
+                            option.values?.forEach(val => {
+                                const valueName = val.name?.trim();
+                                if (!valueName) return;
+
+                                const valueSlug = createSlug(valueName);
+                                if (valueSlug) optionValues.add(valueSlug);
+                            });
+                        });
+                    }
+                });
+
+                // Fetch attribute names from database
+                const attributeIds = Array.from(collectedAttributes.keys())
+                    .filter(key => key.match(/^[0-9a-fA-F]{24}$/)); // Only valid ObjectIDs
+
+                const managedAttributes = attributeIds.length > 0
+                    ? await Attributes.find({ _id: { $in: attributeIds } })
+                    : [];
+
+                // Build final filters
+                for (const [slugOrId, data] of collectedAttributes) {
+                    // Skip if no values
+                    if (data.values.size === 0) continue;
+
+                    let displayName = data.name;
+                    const valuesArray = Array.from(data.values).map(valueSlug => ({
+                        slug: valueSlug,
+                        name: valueSlug.replace(/-/g, ' ') // Simple decode for display
+                    }));
+
+                    // Use attribute name if available
+                    if (slugOrId.match(/^[0-9a-fA-F]{24}$/)) {
+                        const attr = managedAttributes.find(a => a._id.toString() === slugOrId);
+                        if (attr) {
+                            displayName = attr.name[lan] || attr.name['en'] || attr.name || displayName;
+                        }
+                    }
+
+                    attributeFilters[slugOrId] = {
+                        name: displayName,
+                        values: valuesArray
+                    };
+                }
+            }
 
             return res.json({
                 products,
-                totalCount:count,
+                totalCount: count,
                 filters: attributeFilters,
                 breadcrumb,
-                categoryInfo: productCategory
-                    ? {
-                        _id: productCategory._id,
-                        name: productCategory.name ,
-                        slug: productCategory.slug,
-                        metatitle: productCategory.metatitle,
-                        metadescription: productCategory.metadescription,
-                        keywords: productCategory.keywords,
-                        description: productCategory.description,
-                        thumbnail: productCategory.image
-                    }
-                    : null
+                categoryInfo: productCategory ? productCategory : null
             });
 
         } catch (err) {

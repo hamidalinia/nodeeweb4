@@ -10,6 +10,7 @@ import Filters from '@/components/Filters';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'next-i18next';
 import type { ProductType } from '@/types/product';
+import { Filter, X } from 'lucide-react';
 
 type HomeProps = {
     theme?: any;
@@ -42,11 +43,19 @@ export default function ProductPage({
     const router = useRouter();
     const { t } = useTranslation('common');
     const [isClient, setIsClient] = useState(false);
+    const [selectedFilters, setSelectedFilters] = useState<{ [key: string]: string[] }>({});
+    const [showMobileFilters, setShowMobileFilters] = useState(false);
 
     useEffect(() => {
         setIsClient(true);
     }, []);
 
+    const onFilterChange = (key: string, values: string[]) => {
+        setSelectedFilters((prev) => ({
+            ...prev,
+            [key]: values,
+        }));
+    };
     // Generate canonical URL - preserve category in URL
     const canonicalUrl = `${process.env.NEXT_PUBLIC_BASE_URL}${router.asPath.split('?')[0]}`;
 
@@ -118,26 +127,58 @@ export default function ProductPage({
                 footer={theme.footer || { elements: [] }}
                 className="min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white"
             >
-                <div className="container mx-auto py-10 px-4">
+                <div className="container mx-auto py-5 px-4 ">
+                    {/*<div className="flex flex-row md:flex-row md:items-center justify-between">*/}
+
                     {/* Breadcrumb */}
                     {breadcrumb?.path?.length > 0 && (
                         <Breadcrumbs breadcrumb={breadcrumb} />
                     )}
-
-                    <h1 className="text-2xl md:text-3xl font-bold mb-6 text-center">
+                    {/*</div>*/}
+                    <div className="flex flex-row md:flex-row md:items-center justify-between gap-2">
+                    <h1 className="text-2xl md:text-3xl font-bold ">
                         {getPageTitle()}
                     </h1>
+                             {/*Product count*/}
+                            {isClient && (
+                            <div className="hidden md:block text-sm text-gray-600 dark:text-gray-300 mb-4">
+                            {t('Showing')} {startProduct} - {endProduct} {t('of')} {totalProducts} {t('products')}
+                            </div>
+                            )}
+                        <button
+                            onClick={() => setShowMobileFilters(!showMobileFilters)}
+                            className="show-filter md:hidden flex-col  bg-blue-600 text-white rounded-md w-full flex items-center justify-center"
+                        >
+                            {showMobileFilters ? (
+                                <>
+                                    <X size={18} />
+                                    <span>{t('Hide Filters')}</span>
+                                </>
+                            ) : (
+                                <>
+                                    <Filter size={18} />
+                                    <span>{t('Show Filters')}</span>
+                                </>
+                            )}
+                        </button>
 
-                    {/* Product count */}
-                    {isClient && (
-                        <div className="text-sm text-gray-600 dark:text-gray-300 mb-4">
-                            {t('Showing')} {startProduct}-{endProduct} {t('of')} {totalProducts} {t('products')}
-                        </div>
-                    )}
+                    </div>
+                </div>
+                <div className="container mx-auto py-5 px-4">
+
 
                     {/* Filters */}
                     {/*<Filters filters={filters} />*/}
+                    <div className="flex flex-col md:flex-row gap-4">
+                        {(showMobileFilters || isClient) && (
+                            <div className={`md:block ${showMobileFilters ? 'block' : 'hidden'}`}>
+                                <Filters
 
+                        filters={filters}
+                        selectedFilters={selectedFilters}
+                        onFilterChange={onFilterChange}
+                                /></div>)}
+                    <div className="flex-1 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     {/* Products */}
                     {products.length === 0 ? (
                         <div className="text-center py-10">
@@ -147,18 +188,18 @@ export default function ProductPage({
                         </div>
                     ) : (
                         <>
-                            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-6">
+                            {/*<div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-6">*/}
                                 {products.map((product) => (
                                     <ProductCard
                                         key={product._id}
                                         product={product}
                                     />
                                 ))}
-                            </div>
+                            {/*</div>*/}
 
                             {/* Pagination */}
                             {totalPages > 1 && (
-                                <div className="flex flex-col sm:flex-row items-center justify-between mt-10">
+                                <div className="col-span-full flex flex-col sm:flex-row items-center justify-center mt-10 w-full space-x-4">
                                     <div className="text-sm text-gray-600 dark:text-gray-300 mb-4 sm:mb-0">
                                         {t('Page')} {currentPage} {t('of')} {totalPages}
                                     </div>
@@ -219,6 +260,8 @@ export default function ProductPage({
                             )}
                         </>
                     )}
+                    </div>
+                    </div>
                 </div>
             </Layout>
         </>
