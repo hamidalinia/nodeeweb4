@@ -85,7 +85,8 @@ console.log("search",search)
                 const categorySlug = req.query['productCategory.slug'];
 console.log("find slug: categorySlug",{slug: categorySlug})
                 productCategory = await ProductCategory.findOne({ slug: categorySlug });
-                if (!productCategory) {
+console.log("productCategory",productCategory)
+if (!productCategory) {
                     return res.json({
                         products: [],
                         filters: {},
