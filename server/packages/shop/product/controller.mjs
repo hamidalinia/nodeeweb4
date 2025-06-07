@@ -83,7 +83,7 @@ console.log("search",search)
 
             if (req.query['productCategory.slug']) {
                 const categorySlug = req.query['productCategory.slug'];
-
+console.log("find slug: categorySlug",{slug: categorySlug})
                 productCategory = await ProductCategory.findOne({ slug: categorySlug });
                 if (!productCategory) {
                     return res.json({
