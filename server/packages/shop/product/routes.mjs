@@ -7,6 +7,12 @@ export default [
         "controller": controller.getAll,
     },
     {
+        "path": "/archive/:offset/:limit",
+        "method": "get",
+        "access": "admin_user,admin_shopManager,customer_user,customer_all",
+        "controller": controller.getAllArchive,
+    },
+    {
         "path": "/torob/:offset/:limit",
         "method": "get",
         "controller": controller.torob,

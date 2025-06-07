@@ -20,7 +20,6 @@ export default function Navigation({ settings, children }: NavigationProps) {
     const classes = settings?.content?.classes || '';
     const visibilityClasses = getResponsiveClass(responsive);
     const className = `${visibilityClasses} w-full max-w-screen-sm mx-auto ${classes}`.trim();
-    console.log("visibilityClasses",visibilityClasses,"className",className)
 
     return (
         <nav

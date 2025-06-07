@@ -57,6 +57,7 @@ let showArrows=true
     useEffect(() => {
         if(entity) {
             setLoading(true);
+            console.log("customQuery",customQuery)
             fetchEntity(entity, 0, 10, customQuery)
                 .then(data => {
                     setItems(data || []);

@@ -109,6 +109,14 @@ module.exports = {
         'sm:flex-nowrap',
         'flex-wrap',
         'md:flex-row',
+
+
+        'grid',
+        'grid-cols-1',
+        'sm:grid-cols-2',
+        'md:grid-cols-3',
+        'gap-6',
+        'mt-6',
         // add more classes you might use dynamically here
     ],
 };

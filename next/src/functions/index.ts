@@ -14,7 +14,7 @@ export async function fetchEntity(
         if (customQuery) {
             queryObj = typeof customQuery === 'string' ? JSON.parse(customQuery) : customQuery;
         }
-
+console.log("queryObj",queryObj)
         const res = await api.get(url, { params: queryObj });
 
         return res.data;

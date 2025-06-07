@@ -12,6 +12,156 @@ const {read, utils} = XLSX;
 
 let self = ({
 
+    getAllArchive: async function (req, res, next) {
+        const Product = req.mongoose.model('Product');
+        const ProductCategory = req.mongoose.model('ProductCategory');
+        const Attributes = req.mongoose.model('Attributes'); // for filters
+
+        if (req.headers.response !== "json") return res.show();
+
+        const offset = parseInt(req.params.offset || 0);
+        const limit = parseInt(req.params.limit || 20);
+        const lan = req.headers.lan || 'fa';
+        const sort = { in_stock: -1, updatedAt: -1 };
+
+        let search = {};
+        let filters = {};
+        let breadcrumb = {
+            path: [
+                { name: "Home", slug: "/" }
+            ]
+        };
+
+        // --- Search by title
+        const querySearch = req.query.search || req.query.q || req.query.Search || req.params.search;
+        if (querySearch) {
+            search[`title.${lan}`] = {
+                $exists: true,
+                $regex: querySearch,
+                $options: "i"
+            };
+        }
+
+        // --- Search by filter (JSON)
+        if (req.query.filter) {
+            try {
+                const parsed = JSON.parse(req.query.filter);
+                Object.assign(search, parsed);
+
+                if (parsed.search || parsed.q) {
+                    search[`title.${lan}`] = {
+                        $exists: true,
+                        $regex: parsed.search || parsed.q,
+                        $options: "i"
+                    };
+                    delete search.search;
+                    delete search.q;
+                }
+            } catch (err) {
+                console.log("Invalid JSON in filter");
+            }
+        }
+
+        // --- Direct query filters
+        for (const key of Object.keys(req.query)) {
+            if (Product.schema.paths[key]) {
+                const values = req.query[key].split(',');
+                if (req.mongoose.isValidObjectId(values[0])) {
+                    search[key] = { $in: values };
+                }
+            }
+        }
+
+        // --- Default status
+        if (!search.status) {
+            search.status = 'published';
+        }
+console.log("search",search)
+        try {
+            // Handle category slug
+            let productCategory = null;
+
+            if (req.query['productCategory.slug']) {
+                const categorySlug = req.query['productCategory.slug'];
+
+                productCategory = await ProductCategory.findOne({ slug: categorySlug });
+                if (!productCategory) {
+                    return res.json({
+                        products: [],
+                        filters: {},
+                        breadcrumb: {
+                            path: [
+                                { name: "Home", slug: "/" },
+                                { name: "All Products", slug: "/products" }
+                            ]
+                        },
+                        categoryInfo: null
+                    });
+                }
+
+                search.productCategory = productCategory._id;
+
+                breadcrumb.path.push({
+                    name: productCategory.name[lan] || productCategory.name['en'],
+                    slug: `/products/${productCategory.slug}`
+                });
+            } else {
+                breadcrumb.path.push({ name: "All Products", slug: "/products" });
+            }
+
+
+            // Fetch products
+            const query = Product.find(search, 'title slug in_stock quantity thumbnail price salePrice combinations options productCategory')
+                .populate('productCategory', '_id slug name')
+                .sort(sort)
+                .skip(offset)
+                .limit(limit);
+
+            const [products, count] = await Promise.all([
+                query.exec(),
+                Product.countDocuments(search)
+            ]);
+
+            // res.setHeader("X-Total-Count", count);
+
+            // Generate filters from attributes
+            const allAttributes = await Attributes.find({ status: 'published' });
+            const attributeFilters = {};
+
+            allAttributes.forEach(attr => {
+                attributeFilters[attr.slug] = {
+                    name: attr.name[lan] || attr.name['en'],
+                    values: attr.values.map(v => ({
+                        slug: v.slug,
+                        name: v.name[lan] || v.name['en']
+                    }))
+                };
+            });
+
+            return res.json({
+                products,
+                totalCount:count,
+                filters: attributeFilters,
+                breadcrumb,
+                categoryInfo: productCategory
+                    ? {
+                        _id: productCategory._id,
+                        name: productCategory.name ,
+                        slug: productCategory.slug,
+                        metatitle: productCategory.metatitle,
+                        metadescription: productCategory.metadescription,
+                        keywords: productCategory.keywords,
+                        description: productCategory.description,
+                        thumbnail: productCategory.image
+                    }
+                    : null
+            });
+
+        } catch (err) {
+            console.error(err);
+            return res.status(500).json({ error: "Server error" });
+        }
+    },
     getAll: function (req, res, next) {
         let Product = req.mongoose.model('Product');
         if (req.headers.response !== "json") {

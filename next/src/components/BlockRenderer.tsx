@@ -32,7 +32,6 @@ type BlockRendererProps = {
 };
 
 export default function BlockRenderer({ blocks,modeData }: BlockRendererProps) {
-    console.log("blocks",blocks)
     return (
         <>
             {blocks?.map(block => {
@@ -41,7 +40,6 @@ export default function BlockRenderer({ blocks,modeData }: BlockRendererProps) {
 
                 switch (type) {
                     case 'thememode':
-                        console.log("settings",settings,modeData)
                         return <ThemeMode key={id} settings={settings} modeData={modeData as { mode: 'dark' | 'light'; toggleMode: () => void }} />;
                     case 'header':
                         return <Header key={id} settings={settings} />;
@@ -72,7 +70,6 @@ export default function BlockRenderer({ blocks,modeData }: BlockRendererProps) {
                             </Col>
                         );
                     case 'navigation':
-                        console.log("settings",settings,children)
                         return (
                             <Navigation key={id} settings={settings}>
                                 <BlockRenderer blocks={children || []} modeData={modeData as { mode: 'dark' | 'light'; toggleMode: () => void }} />

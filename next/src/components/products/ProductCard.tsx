@@ -93,8 +93,8 @@ const ProductCard = ({ product }: Props) => {
                 <h3 className="mt-2 text-md font-medium line-clamp-3">{title}</h3>
             </Link>
 
-            <div className="w-full mt-2 flex items-center justify-center">
-                <div className="product-price-wrapper">
+
+                <div className="product-price-wrapper w-full mt-2 flex items-center justify-center">
                     {displaySalePrice ? (
                         <div className="flex flex-col">
       <span className="text-green-600 font-semibold whitespace-nowrap">
@@ -114,7 +114,7 @@ const ProductCard = ({ product }: Props) => {
                 </div>
 
 
-            </div>
+
             <div className="w-full mt-2 flex items-center justify-center">
 
             <AddToCartButton
