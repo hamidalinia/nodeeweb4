@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState,useCallback } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import NextImage from 'next/image';
 import { getBaseUrl } from '@/constants/config';
 
@@ -7,7 +7,7 @@ type ImageProps = {
         style?: React.CSSProperties;
         content?: {
             classes?: string;
-            src?: string;
+            src?: string | null;
             alt?: string;
             link?: string;
         };
@@ -15,38 +15,45 @@ type ImageProps = {
 };
 
 export default function Image({ settings }: ImageProps) {
-    let BaseConfig = getBaseUrl();
-    BaseConfig = 'https://asakala.shop';
-
     const style = settings?.style || {};
     const classes = settings?.content?.classes || '';
-    let src = settings?.content?.src || '';
     const alt = settings?.content?.alt || 'image';
     const link = settings?.content?.link || undefined;
 
-    // Normalize src
-    src = src
-        ? src.startsWith('/')
-            ? BaseConfig + src
-            : `${BaseConfig}/${src}`
-        : '/default.jpg';
-
-    const [imgSrc, setImgSrc] = useState(() => {
-        const baseUrlFromWindow = typeof window !== 'undefined' && (window as any).BASE_URL;
-        const baseUrlFromEnv = process.env.NEXT_PUBLIC_BASE_URL || '';
-        const baseUrl = baseUrlFromWindow || baseUrlFromEnv;
+    // Safely get and normalize the image source
+    const getSafeSrc = (src: string | undefined | null): string => {
+        const BaseConfig = 'https://asakala.shop'; // Consider making this configurable
 
         if (!src) return '/default.jpg';
-        if (src.startsWith('http')) return src;
 
-        return `${baseUrl.replace(/\/$/, '')}/${src.replace(/^\//, '')}`;
+        try {
+            // Handle cases where src might be an object or other non-string
+            const srcStr = typeof src === 'string' ? src : '/default.jpg';
+
+            // Check if it's already a full URL
+            if (/^https?:\/\//i.test(srcStr)) {
+                return srcStr;
+            }
+
+            // Handle relative paths
+            return srcStr.startsWith('/')
+                ? BaseConfig + srcStr
+                : `${BaseConfig}/${srcStr}`;
+        } catch (error) {
+            console.error('Error processing image src:', error);
+            return '/default.jpg';
+        }
+    };
+
+    const [imgSrc, setImgSrc] = useState(() => {
+        const initialSrc = settings?.content?.src;
+        return getSafeSrc(initialSrc);
     });
+
     const anchorRef = useRef<HTMLAnchorElement>(null);
     const divRef = useRef<HTMLDivElement>(null);
     const wrapperRef = link ? anchorRef : divRef;
-
-    // const wrapperRef = useRef<HTMLElement>(null);
-    const [parentSize, setParentSize] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
+    const [parentSize, setParentSize] = useState({ width: 300, height: 200 });
 
     const updateSize = useCallback(() => {
         const parent = wrapperRef.current?.parentElement;
@@ -71,15 +78,12 @@ export default function Image({ settings }: ImageProps) {
         return () => observer.disconnect();
     }, [updateSize, wrapperRef]);
 
-    const width = parentSize.width || 300;
-    const height = parentSize.height || 200;
-
     const ImageElement = (
         <NextImage
             src={imgSrc}
             alt={alt}
-            width={width}
-            height={height}
+            width={parentSize.width}
+            height={parentSize.height}
             onError={() => setImgSrc('/default.jpg')}
             className={classes}
             style={{
