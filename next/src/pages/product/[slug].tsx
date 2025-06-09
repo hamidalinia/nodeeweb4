@@ -37,7 +37,7 @@ type Specification = {
 
 type ProductData = {
     _id: string;
-    title: { fa: string };
+    title: { fa: string,en:string };
     description: { fa: string };
     specifications?: Specification[];
     usage_guide?: { fa: string };
@@ -72,7 +72,7 @@ export default function ProductPage({
     const [mainImage, setMainImage] = useState(productData?.thumbnail || '/default.jpg');
     // Add this with your other useState hooks
     const [expanded, setExpanded] = useState(false);
-    const features = productData.excerpt?.fa.split('\n').filter(Boolean) || [];
+    const features = productData?.excerpt?.fa.split('\n').filter(Boolean) || [];
 
     // State for selected combination (variant)
     const [selectedCombinationId, setSelectedCombinationId] = useState(
@@ -80,7 +80,7 @@ export default function ProductPage({
     );
 
     const handleOptionChange = (optionName: string, valueName: string) => {
-        if (!productData.combinations) return;
+        if (!productData?.combinations) return;
 
         const combo = productData.combinations.find(
             (c) => c.options[optionName] === valueName
