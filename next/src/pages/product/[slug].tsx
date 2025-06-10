@@ -6,6 +6,8 @@ import React, {useState , useEffect, useRef} from 'react';
 import Layout from '@/components/Layout';
 import TheImage from '@/components/blocks/TheImage';
 import Link from 'next/link';
+import { ShieldCheck, Undo2, Phone, Truck } from 'lucide-react'
+
 
 
 type Combination = {
@@ -431,73 +433,153 @@ export default function ProductPage({
                                 )}
                             </div>
 
+                            {/*/!* Product Options *!/*/}
+                            {/*{productData.options && productData.options.map((option) => (*/}
+                            {/*    <div key={option.name} className="mb-6">*/}
+                            {/*        <h3 className="font-semibold mb-3">{option.name}:</h3>*/}
+                            {/*        <div className="flex flex-wrap gap-2">*/}
+                            {/*            {option.values.map((value) => (*/}
+                            {/*                <button*/}
+                            {/*                    key={value.id}*/}
+                            {/*                    onClick={() => handleOptionChange(option.name, value.name)}*/}
+                            {/*                    className={`px-4 py-2 rounded-md border flex items-center ${*/}
+                            {/*                        selectedCombination?.options?.[option.name] === value.name*/}
+                            {/*                            ? 'bg-blue-600 text-white border-blue-600'*/}
+                            {/*                            : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:border-blue-500'*/}
+                            {/*                    }`}*/}
+                            {/*                >*/}
+                            {/*                    /!* Show color swatch if image exists *!/*/}
+                            {/*                    {value.image && (*/}
+                            {/*                        <span*/}
+                            {/*                            className="w-6 h-6 rounded-full mr-2 border border-gray-300"*/}
+                            {/*                            style={{*/}
+                            {/*                                backgroundImage: `url(${value.image})`,*/}
+                            {/*                                backgroundSize: 'cover',*/}
+                            {/*                                backgroundPosition: 'center'*/}
+                            {/*                            }}*/}
+                            {/*                        ></span>*/}
+                            {/*                    )}*/}
+                            {/*                    {value.name}*/}
+                            {/*                </button>*/}
+                            {/*            ))}*/}
+                            {/*        </div>*/}
+                            {/*    </div>*/}
+                            {/*/!*))}*!/*/}
+
+                            {/*{productData.options && productData.options.map((option) => (*/}
+                            {/*    <div key={option.name} className="mb-6">*/}
+                            {/*        <label className="block font-semibold mb-2">{option.name}:</label>*/}
+
+                            {/*        <div className="relative">*/}
+                            {/*            <select*/}
+                            {/*                onChange={(e) => handleOptionChange(option.name, e.target.value)}*/}
+                            {/*                value={selectedCombination?.options?.[option.name] || ''}*/}
+                            {/*                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-sm"*/}
+                            {/*            >*/}
+                            {/*                <option value="">انتخاب کنید</option>*/}
+                            {/*                {option.values.map((value) => (*/}
+                            {/*                    <option key={value.id} value={value.name}>*/}
+                            {/*                        {value.name}*/}
+                            {/*                    </option>*/}
+                            {/*                ))}*/}
+                            {/*            </select>*/}
+
+                            {/*            /!* نمایش رنگ انتخاب‌شده کنار سلکت با تصویر *!/*/}
+                            {/*            {(() => {*/}
+                            {/*                const selectedValue = option.values.find(*/}
+                            {/*                    (v) => v.name === selectedCombination?.options?.[option.name]*/}
+                            {/*                );*/}
+                            {/*                return selectedValue?.image ? (*/}
+                            {/*                    <span*/}
+                            {/*                        className="absolute top-1/2 right-3 -translate-y-1/2 w-5 h-5 rounded-full border border-gray-300"*/}
+                            {/*                        style={{*/}
+                            {/*                            backgroundImage: `url(${selectedValue.image})`,*/}
+                            {/*                            backgroundSize: 'cover',*/}
+                            {/*                            backgroundPosition: 'center'*/}
+                            {/*                        }}*/}
+                            {/*                    ></span>*/}
+                            {/*                ) : null;*/}
+                            {/*            })()}*/}
+                            {/*        </div>*/}
+                            {/*    </div>*/}
+                            {/*))}*/}
+
                             {/* Product Options */}
                             {productData.options && productData.options.map((option) => (
                                 <div key={option.name} className="mb-6">
                                     <h3 className="font-semibold mb-3">{option.name}:</h3>
-                                    <div className="flex flex-wrap gap-2">
-                                        {option.values.map((value) => (
-                                            <button
-                                                key={value.id}
-                                                onClick={() => handleOptionChange(option.name, value.name)}
-                                                className={`px-4 py-2 rounded-md border flex items-center ${
-                                                    selectedCombination?.options?.[option.name] === value.name
-                                                        ? 'bg-blue-600 text-white border-blue-600'
-                                                        : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:border-blue-500'
-                                                }`}
-                                            >
-                                                {/* Show color swatch if image exists */}
-                                                {value.image && (
+                                    <div className="relative">
+                                        <select
+                                            onChange={(e) => handleOptionChange(option.name, e.target.value)}
+                                            className="w-full px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 appearance-none"
+                                            value={selectedCombination?.options?.[option.name] || ''}
+                                        >
+                                            <option value="">انتخاب کنید</option>
+                                            {option.values.map((value) => (
+                                                <option
+                                                    key={value.id}
+                                                    value={value.name}
+                                                    className="flex items-center"
+                                                >
+                                                    {value.name}
+                                                </option>
+                                            ))}
+                                        </select>
+
+                                        {/* Custom dropdown arrow */}
+                                        <div className="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                                            <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                                            </svg>
+                                        </div>
+
+                                        {/* Color swatch for selected option */}
+                                        {selectedCombination?.options?.[option.name] && (
+                                            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center">
+                                                {option.values.find(v => v.name === selectedCombination.options[option.name])?.image && (
                                                     <span
-                                                        className="w-6 h-6 rounded-full mr-2 border border-gray-300"
+                                                        className="w-5 h-5 rounded-full border border-gray-300"
                                                         style={{
-                                                            backgroundImage: `url(${value.image})`,
+                                                            backgroundImage: `url(${option.values.find(v => v.name === selectedCombination.options[option.name])?.image})`,
                                                             backgroundSize: 'cover',
                                                             backgroundPosition: 'center'
                                                         }}
                                                     ></span>
                                                 )}
-                                                {value.name}
-                                            </button>
-                                        ))}
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             ))}
+
                         </div>
 
 
                         {/*<div>*/}
 
-                        <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 mb-6">
+                        <div className="border border-gray-200 dark:border-gray-300 rounded-lg p-4 mb-6">
                             {/* Guarantee Section */}
                             {/*<div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 mb-6">*/}
                             <div className= "mb-7">
                                 <ul className="space-y-2 text-sm">
                                     <li className="flex items-center">
-                                        <svg className="w-5 h-5 text-green-500 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                                        </svg>
+                                        <ShieldCheck className="w-5 h-5 text-green-500 ml-2" />
                                         گارانتی اصالت کالا
                                     </li>
                                     <li className="flex items-center">
-                                        <svg className="w-5 h-5 text-green-500 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                                        </svg>
+                                        <Undo2 className="w-5 h-5 text-green-500 ml-2" />
                                         ضمانت بازگشت کالا تا ۷ روز طبق شرایط مرجوعی
                                     </li>
                                     <li className="flex items-center">
-                                        <svg className="w-5 h-5 text-green-500 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                                        </svg>
+                                        <Phone className="w-5 h-5 text-green-500 ml-2" />
                                         مشاوره تلفنی رایگان
                                     </li>
                                     <li className="flex items-center">
-                                        <svg className="w-5 h-5 text-green-500 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                                        </svg>
-                                        ارسال رایگان با خرید بیش از 2 میلیون تومان
+                                        <Truck className="w-5 h-5 text-green-500 ml-2" />
+                                        ارسال رایگان با خرید بیش از ۲ میلیون تومان
                                     </li>
                                 </ul>
+
                             </div>
 
 

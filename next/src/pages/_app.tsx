@@ -14,6 +14,7 @@ import '../styles/rtl.css';
 import '@splidejs/splide/dist/css/splide.min.css';
 
 
+
 interface ExtendedAppProps extends AppProps {
     theme?: any;
 }
