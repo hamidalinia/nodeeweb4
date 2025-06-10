@@ -1,13 +1,42 @@
 import React from 'react';
 
-const RegistrationForm = ({
-                              formState,
-                              updateFormState,
-                              savePasswordAndData,
-                              Logout,
-                              t,
-                          }) => {
-    const { firstName, lastName, extraFields = {}, registerExtraFields = [], passwordAuthentication } = formState;
+interface ExtraField {
+    name: string;
+    label: string;
+    require?: boolean;
+}
+
+interface FormState {
+    firstName: string;
+    lastName: string;
+    password?: string;
+    passwordAuthentication?: boolean;
+    extraFields?: Record<string, string>;
+    registerExtraFields?: ExtraField[];
+}
+
+interface RegistrationFormProps {
+    formState: FormState;
+    updateFormState: (update: Partial<FormState>) => void;
+    savePasswordAndData: (e: React.FormEvent) => void;
+    Logout: () => void;
+    t: (key: string) => string;
+}
+
+const RegistrationForm: React.FC<RegistrationFormProps> = ({
+                                                               formState,
+                                                               updateFormState,
+                                                               savePasswordAndData,
+                                                               Logout,
+                                                               t,
+                                                           }) => {
+    const {
+        firstName,
+        lastName,
+        extraFields = {},
+        registerExtraFields = [],
+        passwordAuthentication,
+    } = formState;
 
     return (
         <div className="bg-white p-6 rounded-lg shadow-md">
@@ -53,7 +82,7 @@ const RegistrationForm = ({
                                 id={item.name}
                                 className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                                     item.name === 'internationalCode' ? 'ltr' : 'rtl'
-                                }`}
+                                    }`}
                                 placeholder={item.label}
                                 value={extraFields[item.name] || ''}
                                 onChange={(e) => {

@@ -1,13 +1,26 @@
 import React from 'react';
 
-const PasswordForm = ({
-                          formState,
-                          updateFormState,
-                          handlePassword,
-                          handleForgotPass,
-                          handleWrongPhoneNumber,
-                          t,
-                      }) => {
+interface PasswordFormProps {
+    formState: {
+        countryCode: string;
+        thePhoneNumber: string;
+        password?: string;
+    };
+    updateFormState: (update: Partial<PasswordFormProps['formState']>) => void;
+    handlePassword: (e: React.FormEvent) => void;
+    handleForgotPass: () => void;
+    handleWrongPhoneNumber: () => void;
+    t: (key: string) => string;
+}
+
+const PasswordForm: React.FC<PasswordFormProps> = ({
+                                                       formState,
+                                                       updateFormState,
+                                                       handlePassword,
+                                                       handleForgotPass,
+                                                       handleWrongPhoneNumber,
+                                                       t,
+                                                   }) => {
     return (
         <div className="bg-white p-6 rounded-lg shadow-md">
             <form onSubmit={handlePassword}>

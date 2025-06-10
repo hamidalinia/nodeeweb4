@@ -1,16 +1,26 @@
 import React from 'react';
 
-const PhoneForm = ({ formState, updateFormState, t }) => {
-    const handleRegister = (e) => {
+interface PhoneFormProps {
+    formState: {
+        countryCode: string;
+        phoneNumber?: string;
+        timer?: number;
+    };
+    updateFormState: (update: Partial<PhoneFormProps['formState']>) => void;
+    t: (key: string) => string;
+}
+
+const PhoneForm: React.FC<PhoneFormProps> = ({ formState, updateFormState, t }) => {
+    const handleRegister = (e: React.FormEvent) => {
         e.preventDefault();
         console.log('==> handleRegister()');
         // Your registration logic here
     };
 
-    const handleSendCodeAgain = (e) => {
-        e?.preventDefault(); // Optional chaining in case it's called without event
+    const handleSendCodeAgain = (e?: React.MouseEvent) => {
+        e?.preventDefault();
         console.log('==> handleSendCodeAgain()');
-        handleRegister(e); // Call handleRegister with the event
+        handleRegister(e as unknown as React.FormEvent); // You could refactor this if it's really the same
     };
 
     return (
@@ -43,7 +53,6 @@ const PhoneForm = ({ formState, updateFormState, t }) => {
                 </button>
             </form>
 
-            {/* Example of how you might use handleSendCodeAgain elsewhere */}
             {formState.timer === 0 && (
                 <button
                     onClick={handleSendCodeAgain}

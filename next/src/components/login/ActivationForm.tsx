@@ -1,14 +1,34 @@
 import React from 'react';
 
-const ActivationForm = ({
-                            formState,
-                            updateFormState,
-                            handleActivation,
-                            handleWrongPhoneNumber,
-                            handleRegister,
-                            t,
-                            globalTimerSet,
-                        }) => {
+interface ActivationFormProps {
+    formState: {
+        countryCode: string;
+        thePhoneNumber: string;
+        activationCode?: string;
+        timer: number;
+    };
+    updateFormState: (state: Partial<{
+        countryCode: string;
+        thePhoneNumber: string;
+        activationCode?: string;
+        timer: number;
+    }>) => void;
+    handleActivation: (e: React.FormEvent<HTMLFormElement>) => void;
+    handleWrongPhoneNumber: () => void;
+    handleRegister: () => void;
+    t: (key: string) => string;
+    globalTimerSet: number;
+}
+
+const ActivationForm: React.FC<ActivationFormProps> = ({
+                                                           formState,
+                                                           updateFormState,
+                                                           handleActivation,
+                                                           handleWrongPhoneNumber,
+                                                           handleRegister,
+                                                           t,
+                                                           globalTimerSet,
+                                                       }) => {
     return (
         <div className="bg-white p-6 rounded-lg shadow-md">
             <form onSubmit={handleActivation}>
@@ -22,13 +42,16 @@ const ActivationForm = ({
 
                     {formState.timer > 0 && (
                         <div className="relative w-32 h-32 mx-auto mb-4">
-                            {/* این بخش رو می‌تونی با کامپوننت CircularProgress یا هر تایمر دلخواه جایگزین کنی */}
+                            {/* Replace this with a real circular progress if needed */}
                             <div
                                 className="text-red-500"
-                                thickness={2}
-                                size={120}
-                                variant="determinate"
-                                value={(formState.timer * 100) / globalTimerSet}
+                                style={{
+                                    borderWidth: '2px',
+                                    width: '120px',
+                                    height: '120px',
+                                    borderRadius: '50%',
+                                    borderColor: 'red',
+                                }}
                             />
                             <div className="absolute inset-0 flex items-center justify-center text-xl font-bold">
                                 {formState.timer}
