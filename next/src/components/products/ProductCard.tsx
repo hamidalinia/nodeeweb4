@@ -27,10 +27,10 @@ const ProductCard = ({ product }: Props) => {
             ? BaseConfig+product.thumbnail
             : `${BaseConfig}/${product.thumbnail}`
         : '/default.jpg');
-    let currency = theme.data?.currency ? t(theme.data.currency) : '';
+    let currency = theme?.currency ? t(theme.currency) : '';
 
-    const taxRate = theme.data?.tax && theme.data?.taxAmount
-        ? 1 + parseFloat(theme.data.taxAmount) / 100
+    const taxRate = theme?.tax && theme?.taxAmount
+        ? 1 + parseFloat(theme.taxAmount) / 100
         : 1;
 
     // Initialize with product prices

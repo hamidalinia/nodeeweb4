@@ -1,10 +1,11 @@
 // components/ThemedApp.tsx
 import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { setThemeData } from '@/store/slices/themeSlice';
+// import { useDispatch } from 'react-redux';
+import { setThemeData,toggleThemeMode } from '@/store/slices/themeSlice';
 import Head from 'next/head';
 import Script from 'next/script';
 import { Toaster } from 'sonner';
+import {useAppDispatch,useAppSelector} from '@/store/hooks';
 
 interface ThemedAppProps {
     Component: any;
@@ -13,10 +14,18 @@ interface ThemedAppProps {
 }
 
 const ThemedApp = ({ Component, pageProps, serverTheme }: ThemedAppProps) => {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
+    const mode=useAppSelector((state: RootState) => {console.log("state",state);return state.theme.mode});
+    console.log("mode",mode)
     const [theme, setTheme] = useState(serverTheme || null);
-    const [mode, setMode] = useState<'light' | 'dark'>(serverTheme?.mode || 'light');
+    // const [mode, setMode] = useState<'light' | 'dark'>(serverTheme?.mode || 'light');
     const [isReady, setIsReady] = useState(!!serverTheme);
+
+
+    const toggleModeWithName = (name) => {
+        dispatch(toggleThemeMode(name));
+
+    };
 
     useEffect(() => {
         if (theme) {
@@ -32,7 +41,7 @@ const ThemedApp = ({ Component, pageProps, serverTheme }: ThemedAppProps) => {
                     const res = await fetch(`${baseUrl}/theme`);
                     const data = await res.json();
                     setTheme(data);
-                    setMode(data?.mode || 'light');
+                    toggleModeWithName(data?.mode || 'light');
                 } catch (error) {
                     console.error('Client theme fetch error:', error);
                 } finally {
@@ -49,12 +58,17 @@ const ThemedApp = ({ Component, pageProps, serverTheme }: ThemedAppProps) => {
     }, [theme]);
 
     useEffect(() => {
+        console.log("mode changed",mode)
         document.documentElement.classList.toggle('dark', mode === 'dark');
     }, [mode]);
 
     const toggleMode = () => {
-        setMode((prev) => (prev === 'dark' ? 'light' : 'dark'));
+        // setMode((prev) => (prev === 'dark' ? 'light' : 'dark'));
+        // setMode((prev) => (mode === 'dark' ? 'light' : 'dark'));
+        dispatch(toggleThemeMode(mode === 'dark' ? 'light' : 'dark'));
+
     };
+
 
     if (!isReady) {
         return (

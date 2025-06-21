@@ -1,4 +1,8 @@
-import React from 'react';
+import React, {ReactNode} from 'react';
+import { useTranslation } from 'next-i18next';
+import { setPassWithPhoneNumber } from '@/functions';
+import { checkCodeMeli,just_persian } from '@/utils';
+import {toast} from "sonner";
 
 interface ExtraField {
     name: string;
@@ -9,7 +13,18 @@ interface ExtraField {
 interface FormState {
     firstName: string;
     lastName: string;
+    countryCode: string;
+    firstNameError: string;
+    lastNameError: string;
+    phoneNumber: string,
     password?: string;
+    email?: string;
+    internationalCode?: string;
+    internationalCodeClass?: string;
+    sessionId?: string;
+    address?: any;
+    webSite?: string;
+    userWasInDbBefore?: boolean;
     passwordAuthentication?: boolean;
     extraFields?: Record<string, string>;
     registerExtraFields?: ExtraField[];
@@ -17,19 +32,266 @@ interface FormState {
 
 interface RegistrationFormProps {
     formState: FormState;
-    updateFormState: (update: Partial<FormState>) => void;
-    savePasswordAndData: (e: React.FormEvent) => void;
-    Logout: () => void;
-    t: (key: string) => string;
+    updateFormState: (update: Partial<RegistrationFormProps['formState']>) => any | ReactNode | null;
+
 }
 
 const RegistrationForm: React.FC<RegistrationFormProps> = ({
                                                                formState,
-                                                               updateFormState,
-                                                               savePasswordAndData,
-                                                               Logout,
-                                                               t,
+                                                               updateFormState=()=>{}
                                                            }) => {
+
+    const { t } = useTranslation();
+    const Logout = async (e: any) => {}
+    const scrollTop = async () => {}
+    const savePasswordAndData = async (e: any) => {
+        e.preventDefault();
+
+        const {
+            countryCode,
+            phoneNumber,
+            firstName,
+            lastName,
+            email,
+            registerExtraFields,
+            userWasInDbBefore,
+            webSite,
+            password,
+            extraFields,
+            internationalCode,
+            internationalCodeClass,
+            address,
+            sessionId,
+        } = formState;
+
+        let addres = address;
+        if (!addres) {
+            addres = []
+        }
+        let fd = countryCode || '98';
+        console.log(firstName, !firstName);
+        console.log(webSite, !webSite);
+        console.log(lastName, !lastName);
+        console.log(password, !password);
+        console.log(extraFields);
+        // console.log(internationalCode, !internationalCode);
+        // console.log(internationalCodeClass, internationalCodeClass != true);
+        if (!firstName || firstName == '') {
+            console.log('firstName', firstName, !firstName);
+            toast.error(t('fill everything!'));
+            return;
+        }
+        console.log(lastName, !lastName);
+        if (formState.firstNameError || formState.lastNameError) {
+            toast.error(t('please check again first name or last name!'));
+            return;
+        }
+        if (!lastName || lastName == '') {
+            console.log('lastName', lastName, !lastName);
+            toast.error(t('fill everything!'));
+            return;
+        }
+        // if (!userWasInDbBefore &&( !webSite || webSite == '')) {
+        //   toast(t('fill everything!'), {
+        //     type: 'error',
+        //   });
+        //   return;
+        // }
+        scrollTop();
+
+        // if (webSite?.title && !userWasInDbBefore) {
+        //     // Regular expression to match any character that is not a letter (a-z) or number (0-9)
+        //     const regex = /[^a-zA-Z0-9]/;
+        //
+        //     // Test the title against the regex
+        //     if (regex.test(webSite.title)) {
+        //         toast.error(t('Domain format is incorrect!'));
+        //         return;
+        //     }
+        // }
+        if (formState.passwordAuthentication)
+            if (!password || password == undefined || password == '') {
+                console.log('password', password, !password);
+
+                toast.error(t('fill everything!'));
+                return;
+            }
+        if (registerExtraFields) {
+            console.log(registerExtraFields.length, registerExtraFields)
+            // let exk=Object.keys(extraFields)
+            for (let i = 0; i <= registerExtraFields?.length; i++) {
+                let label = registerExtraFields[i]?.name;
+                let require = registerExtraFields[i]?.require;
+                if (require && label == 'address') {
+                    let x:any = {
+                        StreetAddress: extraFields?.[label]
+                    }
+                    if (extraFields?.['PostalCode'])
+                        x['PostalCode'] = extraFields['PostalCode'];
+                    if (extraFields?.['postalCode'])
+                        x['PostalCode'] = extraFields['postalCode'];
+                    if (extraFields?.['postalcode'])
+                        x['PostalCode'] = extraFields['postalcode'];
+                    addres.push(x);
+
+                }
+                if (require && label == 'internationalCode') {
+                    if (!extraFields?.[label] || extraFields?.[label] == undefined || extraFields?.[label] == "") {
+                        console.log("internationalCode", extraFields?.[label], !extraFields?.[label]);
+
+                        toast.error(t("fill internationalCode!"));
+                        return;
+                    }
+
+                    if (!internationalCodeClass || internationalCodeClass == undefined || internationalCodeClass == "") {
+                        console.log("internationalCodeClass", internationalCodeClass, !internationalCodeClass);
+                        if (internationalCode) {
+                            if (checkCodeMeli(internationalCode)) {
+
+                            } else {
+                                toast.error(t("fill internationalCode!"));
+                                return;
+                            }
+                        } else {
+                            toast.error(t("fill internationalCode!"));
+                            return;
+                        }
+                    }
+                }
+                if (require && label !== 'internationalCode' && label !== 'address') {
+                    if (!extraFields?.[label] || extraFields?.[label] == undefined || extraFields?.[label] == "") {
+                        console.log("every thing", extraFields?.[label], !extraFields?.[label]);
+
+                        toast.error(t("fill every thing!"));
+                        return;
+                    }
+                }
+                console.log(extraFields?.[label])
+            }
+
+        }
+
+        // return;
+
+
+
+
+        if (formState.language == 'fa' && !just_persian(firstName)) {
+            toast.error(t('Enter first name in persian!'));
+            return;
+        }
+        if (formState.language == 'fa' && !just_persian(lastName)) {
+            toast.error(t('Enter last name in persian!'));
+            return;
+        }
+        console.log('setPassWithPhoneNumber...', {
+            phoneNumber: fd + phoneNumber,
+            firstName,
+            lastName,
+            webSite,
+            address: addres,
+            email,
+            data: extraFields,
+            internationalCode,
+            password,
+        });
+        // return;
+        // if (webSite?.title && !userWasInDbBefore) {
+        //     let something = {title: `${webSite.title.toLowerCase()}.webruno.com`}
+        //     checkDomainIsAvailable({website: something}).then((r) => {
+        //         if (r.success) {
+        //
+        //             setPassWithPhoneNumber({
+        //                 phoneNumber: fd + phoneNumber,
+        //                 firstName,
+        //                 lastName,
+        //                 webSite: {title: `${webSite.title.toLowerCase()}.webruno.com`},
+        //                 address: addres,
+        //                 email,
+        //                 data: extraFields,
+        //                 internationalCode,
+        //                 password,
+        //             }).then((res) => {
+        //                 console.log(' res after setpassword', res)
+        //                 if (res.success || (res.customer.firstName && res.customer.lastName && res.customer.webSite)) {
+        //                     scrollTop();
+        //
+        //                     updateFormState({
+        //                         // token: res.token,
+        //                         setPassword: false,
+        //                         goToSiteBuilder: true,
+        //                         // goToProfile: true,
+        //                     });
+        //                 } else {
+        //                     if (res.domainIsExist) {
+        //                         toast.error(t('website already exist!'))
+        //                     }
+        //                 }
+        //             });
+        //         } else if (r?.message?.error) {
+        //             console.log(' r message error: ', r.message.error)
+        //             if (r.message.error == 'User exists.\n') {
+        //                 toast.error(t('website already exist!'))
+        //             }
+        //         }
+        //     })
+        // }
+        else if (!userWasInDbBefore) {
+            setPassWithPhoneNumber({
+                phoneNumber: fd + phoneNumber,
+                firstName,
+                lastName,
+                address: addres,
+                email,
+                data: extraFields,
+                internationalCode,
+                password,
+            }).then((res) => {
+                console.log(' res after setpassword', res)
+                if (res.success || (res.customer.firstName && res.customer.lastName)) {
+                    scrollTop();
+
+                    updateFormState({
+                        // token: res.token,
+                        setPassword: false,
+                        goToProfile: true,
+                        // goToProfile: true,
+                    });
+                } else {
+                    if (res.domainIsExist) {
+                        toast.error(t('website already exist!'))
+                    }
+                }
+            });
+        }
+        else if (userWasInDbBefore) {
+            console.log('user was in db before')
+            setPassWithPhoneNumber({
+                phoneNumber: fd + phoneNumber,
+                firstName,
+                lastName,
+                address: addres,
+                email,
+                data: extraFields,
+                internationalCode,
+                password,
+            }).then((res) => {
+                console.log(' res after setpassword', res)
+                if (res.success) {
+                    scrollTop();
+
+                    updateFormState({
+                        // token: res.token,
+                        setPassword: false,
+                        goToProfile: true,
+                        // goToProfile: true,
+                    });
+                }
+            });
+        }
+
+    };
+
     const {
         firstName,
         lastName,

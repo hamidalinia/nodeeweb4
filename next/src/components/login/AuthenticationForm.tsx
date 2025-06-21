@@ -1,20 +1,66 @@
 import React from 'react';
+import {toast} from "sonner";
+import { useTranslation } from 'next-i18next';
+import {register} from '@/functions';
+// import {globalTimerSet} from '@/constants/config';
+
 
 interface PhoneFormProps {
     formState: {
         countryCode: string;
+        thePhoneNumber: string;
         phoneNumber?: string;
+        loginMethod?: string;
+        isDisplay?: boolean;
+        enterActivationCodeMode?: boolean;
+        userWasInDbBefore?: boolean;
+        getPassword?: boolean;
         timer?: number;
     };
     updateFormState: (update: Partial<PhoneFormProps['formState']>) => void;
-    t: (key: string) => string;
 }
 
-const PhoneForm: React.FC<PhoneFormProps> = ({ formState, updateFormState, t }) => {
-    const handleRegister = (e: React.FormEvent) => {
+const PhoneForm: React.FC<PhoneFormProps> = ({ formState, updateFormState }) => {
+    const { t } = useTranslation('common');
+
+    const handleRegister = async (e: any) => {
         e.preventDefault();
-        console.log('==> handleRegister()');
-        // Your registration logic here
+
+        const { countryCode, phoneNumber, loginMethod } = formState;
+
+        if (!phoneNumber) {
+            toast.error(t('Please enter your phone number'));
+            return;
+        }
+
+        try {
+            const number = phoneNumber?.substring(phoneNumber.length - 10);
+            const phoneNumberFull = countryCode + number;
+
+            // Replace with your actual API call
+            console.log("loginMethod",loginMethod)
+            const r = await register(phoneNumberFull, countryCode, loginMethod ? loginMethod : "sms");
+
+            if (r?.success === false && r.message) {
+                toast.error(t(r.message));
+                return;
+            }
+console.log("updateFormState",updateFormState,r)
+            updateFormState({
+                thePhoneNumber: number,
+                phoneNumber: number,
+                enterActivationCodeMode: r?.shallWeSetPass,
+                isDisplay: false,
+                userWasInDbBefore: r?.userWasInDbBefore,
+                getPassword: !r?.shallWeSetPass && r?.userWasInDbBefore,
+                // timer: 60
+                // timer: globalTimerSet
+            });
+
+        } catch (error) {
+            toast.error(t('Registration failed'));
+            console.error(error);
+        }
     };
 
     const handleSendCodeAgain = (e?: React.MouseEvent) => {

@@ -1,34 +1,174 @@
-import React from 'react';
+import React, {useState,useEffect} from 'react';
+import { useTranslation } from 'next-i18next';
+import {toast} from "sonner";
+import { setToken } from '@/store/slices/userSlice';
+import {useAppDispatch} from '@/store/hooks';
+
+import {globalTimerSet} from '@/constants/config';
+import {authenticateCustomerWithOTP,register} from '@/functions';
 
 interface ActivationFormProps {
     formState: {
         countryCode: string;
         thePhoneNumber: string;
+        phoneNumber:string;
+        loginMethod:string;
+        firstName:string;
+        lastName:string;
         activationCode?: string;
+        isDisplay?: boolean;
+        showSecondForm?: boolean;
+        userWasInDbBefore?: boolean;
+        enterActivationCodeMode?: boolean;
+        getPassword?: boolean;
+        setPassword?: boolean;
+        goToProfile?: boolean;
+        token?: string;
         timer: number;
     };
     updateFormState: (state: Partial<{
         countryCode: string;
+        phoneNumber:string;
+        firstName:string;
+        lastName:string;
+        loginMethod:string;
         thePhoneNumber: string;
+        userWasInDbBefore?: boolean;
+        isDisplay?: boolean;
+        showSecondForm?: boolean;
         activationCode?: string;
+        enterActivationCodeMode?: boolean;
+        getPassword?: boolean;
+        setPassword?: boolean;
+        goToProfile?: boolean;
+        token?: string;
         timer: number;
     }>) => void;
-    handleActivation: (e: React.FormEvent<HTMLFormElement>) => void;
-    handleWrongPhoneNumber: () => void;
-    handleRegister: () => void;
-    t: (key: string) => string;
-    globalTimerSet: number;
 }
 
 const ActivationForm: React.FC<ActivationFormProps> = ({
                                                            formState,
-                                                           updateFormState,
-                                                           handleActivation,
-                                                           handleWrongPhoneNumber,
-                                                           handleRegister,
-                                                           t,
-                                                           globalTimerSet,
+                                                           updateFormState
                                                        }) => {
+    const { t } = useTranslation();
+    const dispatch = useAppDispatch();
+
+    const [theFormState, setFormState] = useState<{
+        timer: number }>({
+        timer: globalTimerSet,
+    });
+    // Timer effect
+    useEffect(() => {
+        let interval: any;
+    // || formState.getPassword
+        if (formState.enterActivationCodeMode) {
+            interval = setInterval(() => {
+                setFormState(prev => ({
+
+                    timer: prev.timer > 0 ? prev.timer - 1 : handleClearInterval()
+                }));
+            }, 1000);
+        }
+        return () => clearInterval(interval);
+    // , formState.getPassword
+    }, [formState.enterActivationCodeMode]);
+
+
+    const handleRegister = async (e: any) => {
+        e.preventDefault();
+
+        const { countryCode, phoneNumber, loginMethod }:{ countryCode:string, phoneNumber:string, loginMethod:string } = formState;
+
+        if (!phoneNumber) {
+            toast.error(t('Please enter your phone number'));
+            return;
+        }
+
+        try {
+            const number = phoneNumber?.substring(phoneNumber.length - 10);
+            const phoneNumberFull = countryCode + number;
+
+            // Replace with your actual API call
+            const r = await register(phoneNumberFull, countryCode, loginMethod);
+
+            if (r?.success === false && r.message) {
+                toast.error(t(r.message));
+                return;
+            }
+
+
+
+            updateFormState({
+                thePhoneNumber: number,
+                phoneNumber: number,
+                enterActivationCodeMode: r?.shallWeSetPass,
+                isDisplay: false,
+                userWasInDbBefore: r?.userWasInDbBefore,
+                getPassword: !r?.shallWeSetPass && r?.userWasInDbBefore,
+                // timer: 60
+                // timer: globalTimerSet
+            });
+
+        } catch (error) {
+            toast.error(t('Registration failed'));
+            console.error(error);
+        }
+    };
+
+    const handleClearInterval = () => {
+        return 0;
+    };
+
+    const handleActivation = async (e: React.FormEvent) => {
+        e.preventDefault();
+        const { activationCode, countryCode, phoneNumber } = formState;
+
+        if (!activationCode) {
+            toast.error(t('Please enter activation code'));
+            return;
+        }
+
+        try {
+
+
+            // Replace with your actual API call
+            const res = await authenticateCustomerWithOTP(countryCode + phoneNumber,
+                activationCode);
+
+            if (!res.success) {
+                toast.error(t(res.message));
+                return;
+            }
+
+            toast.success(t('Welcome'));
+            dispatch(setToken(res.token));
+            updateFormState({
+                token: res.token,
+                enterActivationCodeMode: false,
+                setPassword: res.shallWeSetPass,
+                firstName: res.firstName || formState.firstName,
+                lastName: res.lastName || formState.lastName,
+                userWasInDbBefore: res.userWasInDbBefore
+            });
+
+        } catch (error) {
+            toast.error(t('Activation failed'));
+            console.error(error);
+        }
+    };
+    const handleWrongPhoneNumber = (e: React.FormEvent) => {
+        e.preventDefault();
+        updateFormState({
+            phoneNumber: '',
+            activationCode: '',
+            enterActivationCodeMode: false,
+            showSecondForm: false,
+            isDisplay: true,
+            setPassword: false,
+            getPassword: false,
+            goToProfile: false,
+        });
+    };
     return (
         <div className="bg-white p-6 rounded-lg shadow-md">
             <form onSubmit={handleActivation}>
@@ -40,7 +180,7 @@ const ActivationForm: React.FC<ActivationFormProps> = ({
                         </span>
                     </div>
 
-                    {formState.timer > 0 && (
+                    {theFormState.timer > 0 && (
                         <div className="relative w-32 h-32 mx-auto mb-4">
                             {/* Replace this with a real circular progress if needed */}
                             <div
@@ -54,7 +194,7 @@ const ActivationForm: React.FC<ActivationFormProps> = ({
                                 }}
                             />
                             <div className="absolute inset-0 flex items-center justify-center text-xl font-bold">
-                                {formState.timer}
+                                {theFormState.timer}
                             </div>
                         </div>
                     )}
@@ -88,7 +228,7 @@ const ActivationForm: React.FC<ActivationFormProps> = ({
                     {t('Wrong phone number?')}
                 </button>
 
-                {formState.timer === 0 && (
+                {theFormState.timer === 0 && (
                     <button
                         type="button"
                         onClick={handleRegister}

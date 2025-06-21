@@ -1,26 +1,105 @@
 import React from 'react';
+import {toast} from "sonner";
+import { useTranslation } from 'next-i18next';
+import { authCustomerWithPassword,authCustomerForgotPass } from '@/functions';
 
 interface PasswordFormProps {
     formState: {
+        activationCode: string;
         countryCode: string;
         thePhoneNumber: string;
+        phoneNumber: string;
+        token: string;
+        firstName: string;
+        lastName: string;
+        goToCheckout: boolean;
+        showSecondForm: boolean;
+        setPassword: boolean;
+        getPassword: boolean;
+        isDisplay: boolean;
+        enterActivationCodeMode: boolean;
+        goToProfile: boolean;
         password?: string;
+        loginMethod?: string;
     };
     updateFormState: (update: Partial<PasswordFormProps['formState']>) => void;
-    handlePassword: (e: React.FormEvent) => void;
-    handleForgotPass: () => void;
-    handleWrongPhoneNumber: () => void;
-    t: (key: string) => string;
 }
 
 const PasswordForm: React.FC<PasswordFormProps> = ({
                                                        formState,
                                                        updateFormState,
-                                                       handlePassword,
-                                                       handleForgotPass,
-                                                       handleWrongPhoneNumber,
-                                                       t,
                                                    }) => {
+    const { t } = useTranslation();
+
+    // Password submission handler
+    const handlePassword = async (e: React.FormEvent) => {
+        e.preventDefault();
+        const { countryCode, phoneNumber, password } = formState;
+
+        try {
+            // Replace with your actual API call
+            const res = await authCustomerWithPassword(countryCode + phoneNumber,
+                password || ''
+            );
+
+            if (res.success) {
+                updateFormState({
+                    token: res.customer.token,
+                    firstName: res.customer.firstName || null,
+                    lastName: res.customer.lastName || null,
+                    goToCheckout: formState.goToCheckout,
+                    goToProfile: !formState.goToCheckout
+                });
+            } else {
+                toast.error(t(res?.message || 'Login failed'));
+            }
+        } catch (error) {
+            console.error(error);
+
+            toast.error(t('Login failed'));
+        }
+    };
+    // Forgot password handler
+    const handleForgotPass = async (e: any) => {
+        e.preventDefault();
+        const { countryCode, phoneNumber, loginMethod='sms' } = formState;
+
+        try {
+            // Replace with your actual API call
+            const r = await authCustomerForgotPass(
+                countryCode + phoneNumber,
+                countryCode,
+                loginMethod
+            );
+
+            updateFormState({
+                enterActivationCodeMode: true,
+                isDisplay: false,
+                getPassword: false,
+                firstName: r.firstName || formState.firstName,
+                lastName: r.lastName || formState.lastName
+            });
+
+        } catch (error) {
+            toast.error(t('Password reset failed'));
+            console.error(error);
+        }
+    };
+// Reset form handler
+    const handleWrongPhoneNumber = (e: any) => {
+        e.preventDefault();
+        updateFormState({
+            phoneNumber: '',
+            activationCode: '',
+            enterActivationCodeMode: false,
+            showSecondForm: false,
+            isDisplay: true,
+            setPassword: false,
+            getPassword: false,
+            goToProfile: false,
+        });
+    };
+
     return (
         <div className="bg-white p-6 rounded-lg shadow-md">
             <form onSubmit={handlePassword}>
