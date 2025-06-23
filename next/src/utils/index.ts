@@ -1,5 +1,6 @@
 import type { ResponsiveSetting } from '@/types/responsiveSetting';
-import { store } from '@/store';
+import { logout } from '@/store/slices/userSlice'; // Import logout action
+import { AppDispatch } from '@/store'; // Import AppDispatch type
 
 
 export const PriceFormat = (p = 0) =>
@@ -52,18 +53,26 @@ export function getResponsiveClass(responsive?: ResponsiveSetting): string {
 }
 
 
-export const getToken=()=> {
-    const base =
-        store.getState().user.token;
-    console.log('getToken',base);
-    if (!base) return null;
+// Get token from localStorage directly
+export const getToken = (): string | null => {
+    if (typeof window === 'undefined') return null;
 
-    return base;
-    // return base.startsWith('Bearer ') ? base : `Bearer ${base}`;
-}
+    try {
+        const serializedState = localStorage.getItem('persist:root');
+        if (!serializedState) return null;
+
+        const parsedState = JSON.parse(serializedState);
+        const userState = JSON.parse(parsedState.user);
+        return userState.token || null;
+    } catch (error) {
+        console.error('Failed to get token from localStorage', error);
+        return null;
+    }
+};
 
 
-export const checkCodeMeli = (code) => {
+
+export const checkCodeMeli = (code: string) => {
     if (!code) return;
     let L = code.length;
 
@@ -78,8 +87,7 @@ export const checkCodeMeli = (code) => {
     return true;
 };
 
-export const just_persian=(str: string)
-=> {
+export const isPersianText=(str: string)=> {
     let p = /^[\u0600-\u06FF\s]+$/;
 
     if (!p.test(str)) {
@@ -88,3 +96,7 @@ export const just_persian=(str: string)
         return true;
     }
 }
+
+export const clearToken = (dispatch: AppDispatch): void => {
+    dispatch(logout());
+};

@@ -1,8 +1,10 @@
-import React, {ReactNode} from 'react';
+import React from 'react';
 import { useTranslation } from 'next-i18next';
+import { toast } from 'sonner';
 import { setPassWithPhoneNumber } from '@/functions';
-import { checkCodeMeli,just_persian } from '@/utils';
-import {toast} from "sonner";
+import { checkCodeMeli, isPersianText } from '@/utils';
+import { loginSuccess, logout } from '@/store/slices/userSlice';
+import {useAppDispatch} from '@/store/hooks';
 
 interface ExtraField {
     name: string;
@@ -14,282 +16,172 @@ interface FormState {
     firstName: string;
     lastName: string;
     countryCode: string;
-    firstNameError: string;
-    lastNameError: string;
-    phoneNumber: string,
+    firstNameError?: string;
+    lastNameError?: string;
+    phoneNumber: string;
     password?: string;
     email?: string;
     internationalCode?: string;
     internationalCodeClass?: string;
     sessionId?: string;
-    address?: any;
-    webSite?: string;
+    address?: any[];
+    webSite?: { title?: string };
     userWasInDbBefore?: boolean;
     passwordAuthentication?: boolean;
     extraFields?: Record<string, string>;
     registerExtraFields?: ExtraField[];
+    language?: string;
+    setPassword?: boolean;
+    goToProfile?: boolean;
+    goToSiteBuilder?: boolean;
 }
 
 interface RegistrationFormProps {
     formState: FormState;
-    updateFormState: (update: Partial<RegistrationFormProps['formState']>) => any | ReactNode | null;
-
+    updateFormState: (update: Partial<FormState>) => void;
 }
 
 const RegistrationForm: React.FC<RegistrationFormProps> = ({
                                                                formState,
-                                                               updateFormState=()=>{}
+                                                               updateFormState = () => {},
                                                            }) => {
-
     const { t } = useTranslation();
-    const Logout = async (e: any) => {}
-    const scrollTop = async () => {}
-    const savePasswordAndData = async (e: any) => {
+    const dispatch = useAppDispatch();
+
+    const handleLogout = (e: React.MouseEvent) => {
         e.preventDefault();
+        // Implement logout logic here
+    };
+
+    const scrollToTop = () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const validateForm = (): boolean => {
+        const { firstName, lastName, password, extraFields = {}, registerExtraFields = [] } = formState;
+
+        // Validate required fields
+        if (!firstName) {
+            toast.error(t('First name is required'));
+            return false;
+        }
+
+        if (!lastName) {
+            toast.error(t('Last name is required'));
+            return false;
+        }
+
+        if (formState.passwordAuthentication && !password) {
+            toast.error(t('Password is required'));
+            return false;
+        }
+
+        // Validate Persian text if language is Farsi
+        if (formState.language === 'fa') {
+            if (!isPersianText(firstName)) {
+                toast.error(t('Enter first name in Persian'));
+                return false;
+            }
+            if (!isPersianText(lastName)) {
+                toast.error(t('Enter last name in Persian'));
+                return false;
+            }
+        }
+
+        // Validate extra fields
+        for (const field of registerExtraFields) {
+            if (field.require && !extraFields[field.name]) {
+                toast.error(t(`${field.label} is required`));
+                return false;
+            }
+
+            // Special validation for international code
+            if (field.name === 'internationalCode' && field.require) {
+                if (!checkCodeMeli(extraFields[field.name])) {
+                    toast.error(t('Invalid national code'));
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    };
+
+    const prepareAddressData = (): any[] => {
+        const { address = [], extraFields = {} } = formState;
+        const newAddress = [...address];
+
+        if (extraFields.address) {
+            const addressEntry: any = { StreetAddress: extraFields.address };
+
+            // Check for postal code in various possible field names
+            ['PostalCode', 'postalCode', 'postalcode'].forEach(key => {
+                if (extraFields[key]) {
+                    addressEntry.PostalCode = extraFields[key];
+                }
+            });
+
+            newAddress.push(addressEntry);
+        }
+
+        return newAddress;
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        scrollToTop();
+
+        if (!validateForm()) return;
 
         const {
-            countryCode,
+            countryCode = '98',
             phoneNumber,
             firstName,
             lastName,
             email,
-            registerExtraFields,
-            userWasInDbBefore,
             webSite,
             password,
-            extraFields,
+            userWasInDbBefore,
             internationalCode,
-            internationalCodeClass,
-            address,
-            sessionId,
+            extraFields = {},
         } = formState;
 
-        let addres = address;
-        if (!addres) {
-            addres = []
-        }
-        let fd = countryCode || '98';
-        console.log(firstName, !firstName);
-        console.log(webSite, !webSite);
-        console.log(lastName, !lastName);
-        console.log(password, !password);
-        console.log(extraFields);
-        // console.log(internationalCode, !internationalCode);
-        // console.log(internationalCodeClass, internationalCodeClass != true);
-        if (!firstName || firstName == '') {
-            console.log('firstName', firstName, !firstName);
-            toast.error(t('fill everything!'));
-            return;
-        }
-        console.log(lastName, !lastName);
-        if (formState.firstNameError || formState.lastNameError) {
-            toast.error(t('please check again first name or last name!'));
-            return;
-        }
-        if (!lastName || lastName == '') {
-            console.log('lastName', lastName, !lastName);
-            toast.error(t('fill everything!'));
-            return;
-        }
-        // if (!userWasInDbBefore &&( !webSite || webSite == '')) {
-        //   toast(t('fill everything!'), {
-        //     type: 'error',
-        //   });
-        //   return;
-        // }
-        scrollTop();
+        const addressData = prepareAddressData();
 
-        // if (webSite?.title && !userWasInDbBefore) {
-        //     // Regular expression to match any character that is not a letter (a-z) or number (0-9)
-        //     const regex = /[^a-zA-Z0-9]/;
-        //
-        //     // Test the title against the regex
-        //     if (regex.test(webSite.title)) {
-        //         toast.error(t('Domain format is incorrect!'));
-        //         return;
-        //     }
-        // }
-        if (formState.passwordAuthentication)
-            if (!password || password == undefined || password == '') {
-                console.log('password', password, !password);
-
-                toast.error(t('fill everything!'));
-                return;
-            }
-        if (registerExtraFields) {
-            console.log(registerExtraFields.length, registerExtraFields)
-            // let exk=Object.keys(extraFields)
-            for (let i = 0; i <= registerExtraFields?.length; i++) {
-                let label = registerExtraFields[i]?.name;
-                let require = registerExtraFields[i]?.require;
-                if (require && label == 'address') {
-                    let x:any = {
-                        StreetAddress: extraFields?.[label]
-                    }
-                    if (extraFields?.['PostalCode'])
-                        x['PostalCode'] = extraFields['PostalCode'];
-                    if (extraFields?.['postalCode'])
-                        x['PostalCode'] = extraFields['postalCode'];
-                    if (extraFields?.['postalcode'])
-                        x['PostalCode'] = extraFields['postalcode'];
-                    addres.push(x);
-
-                }
-                if (require && label == 'internationalCode') {
-                    if (!extraFields?.[label] || extraFields?.[label] == undefined || extraFields?.[label] == "") {
-                        console.log("internationalCode", extraFields?.[label], !extraFields?.[label]);
-
-                        toast.error(t("fill internationalCode!"));
-                        return;
-                    }
-
-                    if (!internationalCodeClass || internationalCodeClass == undefined || internationalCodeClass == "") {
-                        console.log("internationalCodeClass", internationalCodeClass, !internationalCodeClass);
-                        if (internationalCode) {
-                            if (checkCodeMeli(internationalCode)) {
-
-                            } else {
-                                toast.error(t("fill internationalCode!"));
-                                return;
-                            }
-                        } else {
-                            toast.error(t("fill internationalCode!"));
-                            return;
-                        }
-                    }
-                }
-                if (require && label !== 'internationalCode' && label !== 'address') {
-                    if (!extraFields?.[label] || extraFields?.[label] == undefined || extraFields?.[label] == "") {
-                        console.log("every thing", extraFields?.[label], !extraFields?.[label]);
-
-                        toast.error(t("fill every thing!"));
-                        return;
-                    }
-                }
-                console.log(extraFields?.[label])
-            }
-
-        }
-
-        // return;
-
-
-
-
-        if (formState.language == 'fa' && !just_persian(firstName)) {
-            toast.error(t('Enter first name in persian!'));
-            return;
-        }
-        if (formState.language == 'fa' && !just_persian(lastName)) {
-            toast.error(t('Enter last name in persian!'));
-            return;
-        }
-        console.log('setPassWithPhoneNumber...', {
-            phoneNumber: fd + phoneNumber,
-            firstName,
-            lastName,
-            webSite,
-            address: addres,
-            email,
-            data: extraFields,
-            internationalCode,
-            password,
-        });
-        // return;
-        // if (webSite?.title && !userWasInDbBefore) {
-        //     let something = {title: `${webSite.title.toLowerCase()}.webruno.com`}
-        //     checkDomainIsAvailable({website: something}).then((r) => {
-        //         if (r.success) {
-        //
-        //             setPassWithPhoneNumber({
-        //                 phoneNumber: fd + phoneNumber,
-        //                 firstName,
-        //                 lastName,
-        //                 webSite: {title: `${webSite.title.toLowerCase()}.webruno.com`},
-        //                 address: addres,
-        //                 email,
-        //                 data: extraFields,
-        //                 internationalCode,
-        //                 password,
-        //             }).then((res) => {
-        //                 console.log(' res after setpassword', res)
-        //                 if (res.success || (res.customer.firstName && res.customer.lastName && res.customer.webSite)) {
-        //                     scrollTop();
-        //
-        //                     updateFormState({
-        //                         // token: res.token,
-        //                         setPassword: false,
-        //                         goToSiteBuilder: true,
-        //                         // goToProfile: true,
-        //                     });
-        //                 } else {
-        //                     if (res.domainIsExist) {
-        //                         toast.error(t('website already exist!'))
-        //                     }
-        //                 }
-        //             });
-        //         } else if (r?.message?.error) {
-        //             console.log(' r message error: ', r.message.error)
-        //             if (r.message.error == 'User exists.\n') {
-        //                 toast.error(t('website already exist!'))
-        //             }
-        //         }
-        //     })
-        // }
-        else if (!userWasInDbBefore) {
-            setPassWithPhoneNumber({
-                phoneNumber: fd + phoneNumber,
+        try {
+            const response = await setPassWithPhoneNumber({
+                phoneNumber: countryCode + phoneNumber,
                 firstName,
                 lastName,
-                address: addres,
+                address: addressData,
                 email,
                 data: extraFields,
                 internationalCode,
                 password,
-            }).then((res) => {
-                console.log(' res after setpassword', res)
-                if (res.success || (res.customer.firstName && res.customer.lastName)) {
-                    scrollTop();
-
-                    updateFormState({
-                        // token: res.token,
-                        setPassword: false,
-                        goToProfile: true,
-                        // goToProfile: true,
-                    });
-                } else {
-                    if (res.domainIsExist) {
-                        toast.error(t('website already exist!'))
-                    }
-                }
+                ...(webSite?.title && !userWasInDbBefore ? { webSite } : {}),
             });
-        }
-        else if (userWasInDbBefore) {
-            console.log('user was in db before')
-            setPassWithPhoneNumber({
-                phoneNumber: fd + phoneNumber,
-                firstName,
-                lastName,
-                address: addres,
-                email,
-                data: extraFields,
-                internationalCode,
-                password,
-            }).then((res) => {
-                console.log(' res after setpassword', res)
-                if (res.success) {
-                    scrollTop();
 
-                    updateFormState({
-                        // token: res.token,
-                        setPassword: false,
-                        goToProfile: true,
-                        // goToProfile: true,
-                    });
+            if (response.success) {
+                dispatch(loginSuccess({
+                    token: response.customer.token,
+                    address: response.customer.address,
+                    firstName: response.customer.firstName,
+                    lastName: response.customer.lastName,
+                    phoneNumber: countryCode +phoneNumber
+                }));
+                updateFormState({
+                    setPassword: false,
+                    goToProfile: true,
+                });
+
+                if (response.domainIsExist) {
+                    toast.error(t('Website already exists'));
                 }
-            });
+            }
+        } catch (error) {
+            console.error('Registration error:', error);
+            toast.error(t('Registration failed'));
         }
-
     };
 
     const {
@@ -302,7 +194,7 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({
 
     return (
         <div className="bg-white p-6 rounded-lg shadow-md">
-            <form onSubmit={savePasswordAndData}>
+            <form onSubmit={handleSubmit}>
                 <div className="space-y-4">
                     <div>
                         <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
@@ -316,6 +208,7 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({
                             value={firstName}
                             onChange={(e) => updateFormState({ firstName: e.target.value })}
                             dir="rtl"
+                            required
                         />
                     </div>
 
@@ -331,43 +224,48 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({
                             value={lastName}
                             onChange={(e) => updateFormState({ lastName: e.target.value })}
                             dir="rtl"
+                            required
                         />
                     </div>
 
-                    {registerExtraFields.map((item) => (
-                        <div key={item.name}>
-                            <label htmlFor={item.name} className="block text-sm font-medium text-gray-700 mb-1">
-                                {item.label} {item.require && <span className="text-red-500">*</span>}
+                    {registerExtraFields.map((field) => (
+                        <div key={field.name}>
+                            <label htmlFor={field.name} className="block text-sm font-medium text-gray-700 mb-1">
+                                {field.label} {field.require && <span className="text-red-500">*</span>}
                             </label>
                             <input
-                                type="text"
-                                id={item.name}
+                                type={field.name === 'password' ? 'password' : 'text'}
+                                id={field.name}
                                 className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                    item.name === 'internationalCode' ? 'ltr' : 'rtl'
+                                    field.name === 'internationalCode' ? 'ltr' : 'rtl'
                                     }`}
-                                placeholder={item.label}
-                                value={extraFields[item.name] || ''}
+                                placeholder={field.label}
+                                value={extraFields[field.name] || ''}
                                 onChange={(e) => {
-                                    const newFields = { ...extraFields, [item.name]: e.target.value };
-                                    updateFormState({ extraFields: newFields });
+                                    updateFormState({
+                                        extraFields: { ...extraFields, [field.name]: e.target.value },
+                                    });
                                 }}
-                                dir={item.name === 'internationalCode' ? 'ltr' : 'rtl'}
+                                dir={field.name === 'internationalCode' ? 'ltr' : 'rtl'}
+                                required={field.require}
                             />
                         </div>
                     ))}
 
                     {passwordAuthentication && (
                         <div>
-                            <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                                {t('set new password')}
+                            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                                {t('Password')} <span className="text-red-500">*</span>
                             </label>
                             <input
                                 type="password"
-                                id="newPassword"
+                                id="password"
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ltr"
                                 placeholder="******"
+                                value={formState.password || ''}
                                 onChange={(e) => updateFormState({ password: e.target.value })}
                                 dir="ltr"
+                                required
                             />
                         </div>
                     )}
@@ -382,7 +280,7 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({
                     </button>
                     <button
                         type="button"
-                        onClick={Logout}
+                        onClick={handleLogout}
                         className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
                     >
                         {t('Logout')}

@@ -1,7 +1,6 @@
 import api from './api';
 import {getBaseUrl} from '@/constants/config';
-import {useAppDispatch} from '@/store/hooks';
-
+import { logout } from '@/store/slices/userSlice';
 export async function fetchEntity(
     entity: string,
     offset: number,
@@ -44,32 +43,69 @@ export async function register(
 
     } catch (err) {
         console.error(`Axios error fetching:`, err);
-        throw new Error(err?.response?.data?.message || err.message || 'Unknown error');
+        // throw new Error(err?.response?.data?.message || err.message || 'Unknown error');
 
 
     }
 }
 
 
+interface AuthSuccessResponse {
+    success: boolean;
+    token: string;
+    customer: {
+        firstName: string;
+        address: any;
+        token: string;
+        lastName: string;
+    };
+    // Add other success response fields as needed
+}
+
+interface AuthErrorResponse {
+    error: true;
+    status: number;
+    message: string;
+    requiresToast?: boolean;
+}
+
 export async function authCustomerWithPassword(
-    phoneNumber: string, password: string
-) {
+    phoneNumber: string,
+    password: string
+): Promise<AuthSuccessResponse | AuthErrorResponse> {
     try {
-        let url = `${getBaseUrl()}/customer/customer/authCustomerWithPassword`;
+        const url = `${getBaseUrl()}/customer/customer/authCustomerWithPassword`;
 
-        const res = await api.post(url, {
-
+        const res = await api.post<AuthSuccessResponse>(url, {
             phoneNumber: parseInt(phoneNumber),
-            password: password
-        })
-        console.log("res",res)
-        return res?.data;
+            password
+        });
 
-    } catch (err) {
-        console.error(`Axios error fetching:`, err);
-        throw new Error(err?.response?.data?.message || err.message || 'Unknown error');
+        return res.data;
 
+    } catch (err: any) {
+        // Handle 401 Unauthorized
+        if (err?.response?.status === 401) {
+            // Dispatch logout action to clear token from Redux state
+            // store.dispatch(logout());
 
+            return {
+                error: true,
+                status: 401,
+                message: err?.response?.data?.message || 'Invalid credentials',
+                requiresToast: true
+            };
+        }
+
+        // Handle other errors
+        return {
+            error: true,
+            status: err?.response?.status || 500,
+            message: err?.response?.data?.message ||
+            err.message ||
+            'Authentication failed',
+            requiresToast: true
+        };
     }
 }
 
@@ -92,7 +128,7 @@ export async function authCustomerForgotPass(
 
     } catch (err) {
         console.error(`Axios error fetching:`, err);
-        throw new Error(err?.response?.data?.message || err.message || 'Unknown error');
+        // throw new Error(err?.response?.data?.message || err.message || 'Unknown error');
 
 
     }
@@ -121,7 +157,7 @@ export async function authenticateCustomerWithOTP(
 
     } catch (err) {
         console.error(`Axios error fetching:`, err);
-        throw new Error(err?.response?.data?.message || err.message || 'Unknown error');
+        // throw new Error(err?.response?.data?.message || err.message || 'Unknown error');
 
 
     }
@@ -140,7 +176,7 @@ console.log("data",data)
 
     } catch (err) {
         console.error(`Axios error fetching:`, err);
-        throw new Error(err?.response?.data?.message || err.message || 'Unknown error');
+        // throw new Error(err?.response?.data?.message || err.message || 'Unknown error');
 
 
     }

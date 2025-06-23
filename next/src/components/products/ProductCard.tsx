@@ -30,7 +30,7 @@ const ProductCard = ({ product }: Props) => {
     let currency = theme?.currency ? t(theme.currency) : '';
 
     const taxRate = theme?.tax && theme?.taxAmount
-        ? 1 + parseFloat(theme.taxAmount) / 100
+        ? 1 + parseFloat(String(theme.taxAmount)) / 100
         : 1;
 
     // Initialize with product prices

@@ -1,7 +1,10 @@
 import React from 'react';
-import {toast} from "sonner";
+import { useRouter } from 'next/router';
+import { toast } from 'sonner';
 import { useTranslation } from 'next-i18next';
-import { authCustomerWithPassword,authCustomerForgotPass } from '@/functions';
+import { useAppDispatch } from '@/store/hooks';
+import { loginSuccess, logout } from '@/store/slices/userSlice';
+import { authCustomerWithPassword, authCustomerForgotPass } from '@/functions';
 
 interface PasswordFormProps {
     formState: {
@@ -30,43 +33,59 @@ const PasswordForm: React.FC<PasswordFormProps> = ({
                                                        updateFormState,
                                                    }) => {
     const { t } = useTranslation();
+    const router = useRouter();
+    const dispatch = useAppDispatch();
 
-    // Password submission handler
     const handlePassword = async (e: React.FormEvent) => {
         e.preventDefault();
-        const { countryCode, phoneNumber, password } = formState;
+        const { countryCode, phoneNumber, password, goToCheckout } = formState;
 
         try {
-            // Replace with your actual API call
-            const res = await authCustomerWithPassword(countryCode + phoneNumber,
+            const result = await authCustomerWithPassword(
+                countryCode + phoneNumber,
                 password || ''
             );
 
-            if (res.success) {
-                updateFormState({
-                    token: res.customer.token,
-                    firstName: res.customer.firstName || null,
-                    lastName: res.customer.lastName || null,
-                    goToCheckout: formState.goToCheckout,
-                    goToProfile: !formState.goToCheckout
-                });
-            } else {
-                toast.error(t(res?.message || 'Login failed'));
+            if ('error' in result) {
+                if (result.requiresToast) {
+                    toast.error(t(result.message));
+                }
+                if (result.status === 401) {
+                    dispatch(logout());
+                }
+                return;
             }
-        } catch (error) {
-            console.error(error);
 
-            toast.error(t('Login failed'));
+            // Successful login
+            dispatch(loginSuccess({
+                token: result.customer.token,
+                firstName: result.customer.firstName,
+                lastName: result.customer.lastName,
+                phoneNumber: phoneNumber
+            }));
+
+            updateFormState({
+                token: result.token,
+                firstName: result.customer.firstName,
+                lastName: result.customer.lastName,
+                goToProfile: !goToCheckout
+            });
+
+            toast.success(t('login_success'));
+            router.push(goToCheckout ? '/checkout' : '/profile');
+
+        } catch (error) {
+            console.error("Login error:", error);
+            toast.error(t('login_failed'));
         }
     };
-    // Forgot password handler
-    const handleForgotPass = async (e: any) => {
+
+    const handleForgotPass = async (e: React.FormEvent) => {
         e.preventDefault();
-        const { countryCode, phoneNumber, loginMethod='sms' } = formState;
+        const { countryCode, phoneNumber, loginMethod = 'sms' } = formState;
 
         try {
-            // Replace with your actual API call
-            const r = await authCustomerForgotPass(
+            const response = await authCustomerForgotPass(
                 countryCode + phoneNumber,
                 countryCode,
                 loginMethod
@@ -76,17 +95,17 @@ const PasswordForm: React.FC<PasswordFormProps> = ({
                 enterActivationCodeMode: true,
                 isDisplay: false,
                 getPassword: false,
-                firstName: r.firstName || formState.firstName,
-                lastName: r.lastName || formState.lastName
+                firstName: response.firstName || formState.firstName,
+                lastName: response.lastName || formState.lastName
             });
 
         } catch (error) {
-            toast.error(t('Password reset failed'));
+            toast.error(t('password_reset_failed'));
             console.error(error);
         }
     };
-// Reset form handler
-    const handleWrongPhoneNumber = (e: any) => {
+
+    const handleWrongPhoneNumber = (e: React.FormEvent) => {
         e.preventDefault();
         updateFormState({
             phoneNumber: '',
