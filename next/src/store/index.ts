@@ -11,7 +11,8 @@ import {
     REGISTER,
     PersistConfig
 } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
+// import storage from 'redux-persist/lib/storage';
+import createWebStorage from "redux-persist/lib/storage/createWebStorage";
 import { createWrapper } from 'next-redux-wrapper';
 
 // Import your reducers and state types
@@ -39,6 +40,29 @@ const rootReducer = combineReducers({
     cart: cartReducer,
     menu: menuReducer,
 });
+
+
+
+const createNoopStorage = () => {
+    return {
+        getItem(_key: string) {
+            return Promise.resolve(null);
+        },
+        setItem(_key: string, value: string) {
+            return Promise.resolve(value);
+        },
+        removeItem(_key: string) {
+            return Promise.resolve();
+        },
+    };
+};
+
+const storage =
+    typeof window !== "undefined"
+        ? createWebStorage("local")
+        : createNoopStorage();
+
+
 
 // Persist config with proper typing
 const persistConfig: PersistConfig<NonPersistedRootState> = {

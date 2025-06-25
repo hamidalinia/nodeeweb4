@@ -1,6 +1,11 @@
 import api from './api';
 import {getBaseUrl} from '@/constants/config';
 import { logout } from '@/store/slices/userSlice';
+
+import type { CartItem } from "@/types/cart";
+
+
+
 export async function fetchEntity(
     entity: string,
     offset: number,
@@ -171,6 +176,39 @@ export async function setPassWithPhoneNumber(data:any) {
 
 console.log("data",data)
         const res = await api.post(url, data)
+        console.log("res",data,res)
+        return res?.data;
+
+    } catch (err) {
+        console.error(`Axios error fetching:`, err);
+        // throw new Error(err?.response?.data?.message || err.message || 'Unknown error');
+
+
+    }
+}
+
+
+
+export async function getSettings() {
+    try {
+        let url = `${getBaseUrl()}/customer/settings`;
+        const res = await api.get(url)
+        return res?.data;
+
+    } catch (err) {
+        console.error(`Axios error fetching:`, err);
+
+
+    }
+}
+
+
+export async function updateAddress(data:any) {
+    try {
+        let url = `${getBaseUrl()}/customer/customer/updateAddress`;
+
+        console.log("data",data)
+        const res = await api.put(url, data)
         console.log("res",data,res)
         return res?.data;
 

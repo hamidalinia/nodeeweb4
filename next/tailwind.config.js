@@ -122,6 +122,10 @@ module.exports = {
         'md:justify-between',
         'justify-between',
         'py-5',
+        '-top-2',
+        '-right-2',
+        '-top-5',
+        '-right-5',
         // add more classes you might use dynamically here
     ],
 };

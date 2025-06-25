@@ -33,12 +33,14 @@ export default function Button({settings}: ButtonProps) {
     const className=classes;
     const dispatch = useDispatch();
     const isMenuOpen = useSelector((state: RootState) => state.menu.isMenuOpen);
+    const cart = useSelector((state: RootState) => state.cart);
+    // console.log("cart",cart?.length)
     const router = useRouter();
     // return action;
     if (action == 'toggleContact') {
         return (
             <button
-                className={`${className} cursor-pointer inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition`}
+                className={`${className} toggleContact cursor-pointer inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition`}
                 style={style}
             >
       <span className="flex items-center gap-2">
@@ -51,7 +53,7 @@ export default function Button({settings}: ButtonProps) {
         return (
             <button
                 onClick={() => router.push('/login')}
-                className={`${className} cursor-pointer inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition`}
+                className={`${className} login cursor-pointer inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition`}
                 style={style}
             >
       <span className="flex items-center gap-2">
@@ -65,7 +67,7 @@ export default function Button({settings}: ButtonProps) {
             <button
                 // href={action}
                 onClick={() => dispatch(toggleMenu())}
-                className={`${className} cursor-pointer inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition`}
+                className={`${className} toggleMenu cursor-pointer inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition`}
                 style={style}
             >
       <span className="flex items-center gap-2">
@@ -77,13 +79,19 @@ export default function Button({settings}: ButtonProps) {
     if (action == 'toggleCart') {
         return (
             <button
+                onClick={() => router.push('/cart')}
+
                 // href={action}
                 className={`${className} cursor-pointer inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition`}
                 style={style}
             >
-      <span className="flex items-center gap-2">
+      <span className="flex toggleCart items-center gap-2 relative">
         <ShoppingBasket className="w-4 h-4"/>
+           <span className="absolute -top-5 -right-5 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+               {cart.length}
       </span>
+      </span>
+
             </button>
         );
     }

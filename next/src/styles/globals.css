@@ -253,3 +253,11 @@ img{
     padding: 3px;
     gap: 2px;
 }
+
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}

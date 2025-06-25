@@ -6,6 +6,7 @@ export type CartItem = {
         en?: string;
     };
     thumbnail?: string;
+    isVirtual?: boolean;
     price: number;
     salePrice?: number;
     quantity: number; // quantity in cart

@@ -9,7 +9,7 @@ const initialState: ThemeData = {
     data: null,
     tax: false,
 taxAmount: '0',
-currency: 'toman'
+currency: 'Toman'
 };
 
 const themeSlice = createSlice({
