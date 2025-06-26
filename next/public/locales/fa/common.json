@@ -82,6 +82,9 @@
   "addNewAddress": "افزودن آدرس جدید",
   "newAddress": "آدرس جدید",
   "shippingAddress": "آدرس حمل و نقل",
+  "selectedAddress": "آدرس انتخاب شده",
+  "change": "ویرایش",
+  "shippingMethod": "روش ارسال",
   "namePlaceholder": "جان دو",
   "phone": "شماره تلفن",
   "streetAddress": "نشانی خیابان",
@@ -112,6 +115,10 @@
   "sendReply": "ارسال پاسخ",
   "ticketId": "شناسه تیکت",
   "lastUpdate": "آخرین بروزرسانی",
+  "selectAddress": "انتخاب آدرس",
+  "selectDeliveryMethod": "انتخاب روش ارسال",
+  "selectPaymentMethod": "انتخاب روش پرداخت",
   "actions": "عملیات",
+  "payment": "پرداخت",
   "view": "مشاهده"
 }

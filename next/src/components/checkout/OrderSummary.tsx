@@ -1,22 +1,26 @@
-// components/checkout/InvoiceSummary.tsx
+// components/checkout/OrderSummary.tsx
 import { useTranslation } from 'next-i18next';
 import { CartItem } from '@/types';
 
-interface InvoiceSummaryProps {
+interface OrderSummaryProps {
     items: CartItem[];
     theme: string;
     hasPhysicalProducts: boolean;
     shippingCost: number;
     currentLang: string;
+    activeStep: string;
+    selectedAddress: any;
 }
 
-const InvoiceSummary = ({
-                            items,
-                            theme,
-                            hasPhysicalProducts,
-                            shippingCost,
-                            currentLang
-                        }: InvoiceSummaryProps) => {
+const OrderSummary = ({
+                          items,
+                          theme,
+                          hasPhysicalProducts,
+                          shippingCost,
+                          currentLang,
+                          activeStep,
+                          selectedAddress
+                      }: OrderSummaryProps) => {
     const { t } = useTranslation('common');
 
     // Calculate totals
@@ -34,39 +38,39 @@ const InvoiceSummary = ({
     };
 
     return (
-        <div className={`p-6 rounded-lg shadow-md ${
+        <div className={`sticky top-4 p-6 rounded-lg shadow-md ${
             theme === 'dark' ? 'bg-gray-800' : 'bg-white'
             }`}>
             <h2 className="text-xl font-semibold mb-4">{t('orderSummary')}</h2>
 
+            {/* Show selected address in shipping/payment steps */}
+            {(activeStep === 'shipping' || activeStep === 'payment') && selectedAddress && (
+                <div className="mb-6 p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                    <h3 className="text-sm font-medium mb-2">{t('selectedAddress')}</h3>
+                    <div className="font-medium">{selectedAddress.fullName}</div>
+                    <div className="text-sm">
+                        {selectedAddress.address}, {selectedAddress.city}
+                    </div>
+                    <div className="text-sm">{selectedAddress.phone}</div>
+                </div>
+            )}
+
             <div className="space-y-3 max-h-60 overflow-y-auto pr-2">
                 {items.map(item => (
-                    <div key={item.id} className="flex justify-between text-sm">
+                    <div key={item.id} className="flex justify-between text-sm pb-2 border-b">
                         <div className="flex-1 truncate">
                             <div className="font-medium">
                                 {getItemName(item)}
                             </div>
-                            {item.variation && (
-                                <div className="text-gray-500 mt-1">
-                                    {Object.entries(item.variation.options).map(
-                                        ([key, value]) => (
-                                            <div key={key} className="text-xs">
-                                                {value}
-                                            </div>
-                                        ))}
-                                </div>
-                            )}
+                            <div className="text-gray-500 text-xs">
+                                {item.quantity} × {item.salePrice || item.price}
+                            </div>
                         </div>
-                        <div className="ml-4 flex flex-col items-end min-w-[90px]">
+                        <div className="ml-4 min-w-[90px] text-right">
                             <span className="font-medium">
                                 {((item.salePrice || item.price) * item.quantity).toLocaleString(currentLang, {
-                                    style: 'currency',
-                                    currency: 'IRR',
                                     minimumFractionDigits: 0
-                                })}
-                            </span>
-                            <span className="text-gray-500 text-xs">
-                                {item.quantity} × {item.salePrice || item.price}
+                                })} {t('currency')}
                             </span>
                         </div>
                     </div>
@@ -78,10 +82,8 @@ const InvoiceSummary = ({
                     <span>{t('subtotal')}</span>
                     <span className="font-medium">
                         {subtotal.toLocaleString(currentLang, {
-                            style: 'currency',
-                            currency: 'IRR',
                             minimumFractionDigits: 0
-                        })}
+                        })} {t('currency')}
                     </span>
                 </div>
 
@@ -90,10 +92,8 @@ const InvoiceSummary = ({
                         <span>{t('shipping')}</span>
                         <span className="font-medium">
                             {shippingCost.toLocaleString(currentLang, {
-                                style: 'currency',
-                                currency: 'IRR',
                                 minimumFractionDigits: 0
-                            })}
+                            })} {t('currency')}
                         </span>
                     </div>
                 )}
@@ -102,10 +102,8 @@ const InvoiceSummary = ({
                     <span>{t('total')}</span>
                     <span>
                         {total.toLocaleString(currentLang, {
-                            style: 'currency',
-                            currency: 'IRR',
                             minimumFractionDigits: 0
-                        })}
+                        })} {t('currency')}
                     </span>
                 </div>
             </div>
@@ -113,4 +111,4 @@ const InvoiceSummary = ({
     );
 };
 
-export default InvoiceSummary;
+export default OrderSummary;

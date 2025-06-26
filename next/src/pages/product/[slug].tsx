@@ -384,18 +384,11 @@ export default function ProductPage({
 
                                 {/* Collapsible Features Section */}
                                 <div className="relative">
-                                    <ul className={`space-y-3 ${expanded ? '' : 'max-h-[7.5rem] overflow-hidden'}`}>
-                                        {productData.excerpt?.fa.split('\n').filter(Boolean).map((feature, i) => (
-                                            <li key={i} className="flex items-start">
-                                                <svg className="w-5 h-5 mt-0.5 ml-1 text-green-500 flex-shrink-0"
-                                                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                                                          d="M5 13l4 4L19 7"/>
-                                                </svg>
-                                                <span>{feature.trim()}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
+
+                                        <div
+                                            className={`space-y-3 ${expanded ? '' : 'max-h-[7.5rem] overflow-hidden'}`}
+                                            dangerouslySetInnerHTML={{__html: productData.excerpt?.fa}}
+                                        />
 
                                     {/* Gradient overlay for collapsed state */}
                                     {!expanded && features.length > 3 && (
