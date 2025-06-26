@@ -213,6 +213,18 @@ export async function getAddress() {
 
     }
 }
+export async function getGateways() {
+    try {
+        let url = `${getBaseUrl()}/customer/gateway/0/10?filter={%22type%22:%22bank%22}`;
+        const res = await api.get(url)
+        return res?.data;
+
+    } catch (err) {
+        console.error(`Axios error fetching:`, err);
+
+
+    }
+}
 
 
 export async function updateAddress(data:any) {
