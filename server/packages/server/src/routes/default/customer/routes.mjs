@@ -50,6 +50,12 @@ export default [
         controller: controller.updateAddress,
     },
     {
+        path: "/getAddress",
+        method: "get",
+        access: "customer_user",
+        controller: controller.getAddress,
+    },
+    {
         path: "/:_id",
         method: "put",
         access: "admin_user,admin_shopManager",

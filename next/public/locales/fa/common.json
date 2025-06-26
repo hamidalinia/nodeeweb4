@@ -80,6 +80,8 @@
   "addAddress": "افزودن آدرس جدید",
   "editAddress": "ویرایش آدرس",
   "addNewAddress": "افزودن آدرس جدید",
+  "newAddress": "آدرس جدید",
+  "shippingAddress": "آدرس حمل و نقل",
   "namePlaceholder": "جان دو",
   "phone": "شماره تلفن",
   "streetAddress": "نشانی خیابان",

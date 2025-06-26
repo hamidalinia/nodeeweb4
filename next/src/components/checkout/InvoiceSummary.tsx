@@ -10,7 +10,7 @@ const InvoiceSummary = ({
     theme: string;
     hasPhysicalProducts: boolean;
 }) => {
-    const { t, i18n } = useTranslation('checkout');
+    const { t, i18n } = useTranslation('common');
     const currentLang = i18n.language; // 'fa' or 'en'
 
     // Calculate totals

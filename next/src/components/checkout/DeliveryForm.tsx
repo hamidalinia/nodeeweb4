@@ -30,7 +30,7 @@ const DeliveryForm = ({
     lang: 'fa' | 'en';
     initialAddress?: UserAddress;
 }) => {
-    const { t } = useTranslation('checkout');
+    const { t } = useTranslation('common');
     const [formData, setFormData] = useState<UserAddress>(initialAddress || {
         fullName: '',
         phone: '',

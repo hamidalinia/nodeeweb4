@@ -1600,6 +1600,34 @@ const self = {
             }
         );
     },
+    getAddress: function (req, res, next) {
+        let Customer = req.mongoose.model('Customer');
+
+        console.log('\n\n\n\n\n =====> get Address:');
+        Customer.findOne(
+            {_id: req.headers._id},
+            '_id , phoneNumber , email , address',
+            function (err, respo) {
+                if (err) {
+                    res.json({
+                        success: false,
+                        err: err,
+                        message: 'خطا در ثبت اطلاعات!',
+                    });
+                    return;
+                }
+
+                    if (respo._id.toString() === req.headers._id.toString()) {
+                        c = true;
+                        res.json({
+                            success: true,
+                            customer: respo,
+                        });
+                        return;
+                    }
+            }
+        );
+    },
     updateCustomer: function (req, res, next) {
         const Customer = req.mongoose.model('Customer');
 
