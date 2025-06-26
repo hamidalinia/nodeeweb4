@@ -201,6 +201,18 @@ export async function getSettings() {
 
     }
 }
+export async function getAddress() {
+    try {
+        let url = `${getBaseUrl()}/customer/customer/getAddress`;
+        const res = await api.get(url)
+        return res?.data;
+
+    } catch (err) {
+        console.error(`Axios error fetching:`, err);
+
+
+    }
+}
 
 
 export async function updateAddress(data:any) {

@@ -1618,10 +1618,16 @@ const self = {
                 }
 
                     if (respo._id.toString() === req.headers._id.toString()) {
-                        c = true;
+                        // c = true;
                         res.json({
                             success: true,
                             customer: respo,
+                        });
+                        return;
+                    }else{
+                        res.json({
+                            success: false,
+                            customer: {},
                         });
                         return;
                     }
