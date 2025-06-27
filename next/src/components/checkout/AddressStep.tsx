@@ -1,6 +1,7 @@
 // components/checkout/AddressStep.tsx
 import React, { useState } from 'react';
 import DeliveryForm from './DeliveryForm';
+import { ThemeData } from '@/types/themeData';
 
 const AddressStep = ({
                          theme,
@@ -12,7 +13,7 @@ const AddressStep = ({
                          handleNewAddressSubmit,
                          lang
                      }: {
-    theme: string;
+    theme: ThemeData;
     t: (key: string) => string;
     addresses: any[];
     selectedAddress: any;
@@ -22,15 +23,15 @@ const AddressStep = ({
     lang: 'fa' | 'en';
 }) => {
     const [showAddressForm, setShowAddressForm] = useState(false);
-
+const themeMode=theme?.mode;
     return (
-        <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
+        <div className={`p-6 rounded-lg ${themeMode === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-semibold">{t('shippingAddress')}</h2>
                 {addresses.length > 0 && !showAddressForm && (
                     <button
                         className={`px-4 py-2 rounded-lg font-medium flex items-center text-sm ${
-                            theme === 'dark'
+                            themeMode === 'dark'
                                 ? 'bg-gray-700 hover:bg-gray-600'
                                 : 'bg-gray-200 hover:bg-gray-300'
                             }`}
@@ -68,7 +69,7 @@ const AddressStep = ({
                                 className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
                                     selectedAddress?.id === address.id
                                         ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 shadow-md'
-                                        : theme === 'dark'
+                                        : themeMode === 'dark'
                                         ? 'border-gray-700 hover:border-gray-500'
                                         : 'border-gray-200 hover:border-gray-400'
                                     }`}
@@ -107,7 +108,7 @@ const AddressStep = ({
                 {addresses.length > 0 && !showAddressForm && (
                     <button
                         className={`px-4 py-2 rounded-lg font-medium flex items-center text-sm ${
-                            theme === 'dark'
+                            themeMode === 'dark'
                                 ? 'bg-gray-700 hover:bg-gray-600'
                                 : 'bg-gray-200 hover:bg-gray-300'
                             }`}

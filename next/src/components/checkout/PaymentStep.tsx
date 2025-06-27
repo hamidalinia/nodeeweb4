@@ -1,11 +1,12 @@
 // components/checkout/PaymentStep.tsx
 import React, { useState, useEffect } from 'react';
-import { CartItem } from '@/types';
+import { CartItem } from '@/types/cart';
 import { getGateways } from '@/functions';
 import { formatPrice } from '@/utils';
+import { ThemeData } from '@/types/themeData';
 
 interface PaymentStepProps {
-    theme: string;
+    theme: ThemeData;
     t: (key: string) => string;
     setActiveStep: (step: 'address' | 'shipping' | 'payment') => void;
     hasPhysicalProducts: boolean;
@@ -38,6 +39,8 @@ const PaymentStep = ({
                          total
                      }: PaymentStepProps) => {
     const currency = theme?.currency ? t(theme.currency) : '';
+    const themeMode=theme?.mode;
+
     const [gateways, setGateways] = useState<Gateway[]>([]);
     const [selectedGateway, setSelectedGateway] = useState<string>('');
     const [loadingGateways, setLoadingGateways] = useState(true);
@@ -60,9 +63,9 @@ const PaymentStep = ({
                 const allGateways = await getGateways();
 
                 // Filter out unwanted gateways and inactive ones
-                const validGateways = allGateways.filter(gateway =>
-                    gateway.active &&
-                    !['paypal', 'static'].includes(gateway.slug.toLowerCase())
+                const validGateways = allGateways.filter((gateway:any)=>
+                    gateway.active
+
                 );
 
                 setGateways(validGateways);
@@ -96,7 +99,7 @@ const PaymentStep = ({
     };
 
     return (
-        <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
+        <div className={`p-6 rounded-lg ${themeMode === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
             <h2 className="text-2xl font-bold mb-6">{t('payment')}</h2>
 
             {/* Order Summary Section */}
@@ -186,7 +189,7 @@ const PaymentStep = ({
                                 className={`p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
                                     selectedGateway === gateway._id
                                         ? 'border-purple-600 bg-purple-50 dark:bg-purple-900/30 shadow-md'
-                                        : theme === 'dark'
+                                        : themeMode === 'dark'
                                         ? 'border-gray-700 hover:border-gray-500'
                                         : 'border-gray-300 hover:border-gray-400'
                                     }`}

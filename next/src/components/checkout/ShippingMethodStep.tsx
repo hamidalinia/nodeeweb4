@@ -2,6 +2,7 @@
 import React from 'react';
 import { formatPrice } from '@/utils';
 import { useTranslation } from 'next-i18next';
+import { ThemeData } from '@/types/themeData';
 
 const ShippingMethodStep = ({
                                 theme,
@@ -13,7 +14,7 @@ const ShippingMethodStep = ({
                                 currency,
                                 setActiveStep
                             }: {
-    theme: string;
+    theme: ThemeData;
     selectedAddress: any;
     deliverySettings: any[];
     selectedShippingMethod: number;
@@ -23,9 +24,10 @@ const ShippingMethodStep = ({
     setActiveStep: (step: 'address' | 'shipping' | 'payment') => void;
 }) => {
     const { t, i18n } = useTranslation('common');
+    const themeMode=theme?.mode;
 
     return (
-        <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
+        <div className={`p-6 rounded-lg ${themeMode === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
             <div className="mb-6 p-4 rounded-lg bg-gray-100 dark:bg-gray-700">
                 <div className="flex justify-between items-start">
                     <div>
@@ -54,7 +56,7 @@ const ShippingMethodStep = ({
                             className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
                                 selectedShippingMethod === index
                                     ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 shadow-md'
-                                    : theme === 'dark'
+                                    : themeMode === 'dark'
                                     ? 'border-gray-700 hover:border-gray-500'
                                     : 'border-gray-200 hover:border-gray-400'
                                 }`}
@@ -102,7 +104,7 @@ const ShippingMethodStep = ({
 
                             <button
                                 className={`px-4 py-2 rounded-lg font-medium flex items-center text-sm ${
-                                    theme === 'dark'
+                                    themeMode === 'dark'
                                         ? 'bg-gray-700 hover:bg-gray-600'
                                         : 'bg-gray-200 hover:bg-gray-300'
                                     }`}

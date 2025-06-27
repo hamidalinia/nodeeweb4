@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import AddToCartButton from '@/components/AddToCartButton';
+import AddToCartButton from '@/components/products/AddToCartButton';
 import { NormalizePrice, PriceFormat } from '@/utils';
 import type { ProductType } from '@/types/product';
 import type { ProductCombination } from '@/types/product';

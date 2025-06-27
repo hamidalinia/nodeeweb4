@@ -1,10 +1,11 @@
 // components/checkout/InvoiceSummary.tsx
 import { useTranslation } from 'next-i18next';
-import { CartItem } from '@/types';
+import { CartItem } from '@/types/cart';
+import { ThemeData } from '@/types/themeData';
 
 interface InvoiceSummaryProps {
     items: CartItem[];
-    theme: string;
+    theme: ThemeData;
     hasPhysicalProducts: boolean;
     shippingCost: number;
     currentLang: string;
@@ -18,6 +19,7 @@ const InvoiceSummary = ({
                             currentLang
                         }: InvoiceSummaryProps) => {
     const { t } = useTranslation('common');
+    const themeMode=theme?.mode;
 
     // Calculate totals
     const subtotal = items.reduce(
@@ -35,7 +37,7 @@ const InvoiceSummary = ({
 
     return (
         <div className={`p-6 rounded-lg shadow-md ${
-            theme === 'dark' ? 'bg-gray-800' : 'bg-white'
+            themeMode === 'dark' ? 'bg-gray-800' : 'bg-white'
             }`}>
             <h2 className="text-xl font-semibold mb-4">{t('orderSummary')}</h2>
 

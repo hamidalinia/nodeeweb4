@@ -1,10 +1,11 @@
 // components/checkout/OrderSummary.tsx
 import { useTranslation } from 'next-i18next';
-import { CartItem } from '@/types';
+import { CartItem } from '@/types/cart';
+import { ThemeData } from '@/types/themeData';
 
 interface OrderSummaryProps {
     items: CartItem[];
-    theme: string;
+    theme: ThemeData;
     hasPhysicalProducts: boolean;
     shippingCost: number;
     currentLang: string;
@@ -22,6 +23,7 @@ const OrderSummary = ({
                           selectedAddress
                       }: OrderSummaryProps) => {
     const { t } = useTranslation('common');
+    const themeMode=theme?.mode;
 
     // Calculate totals
     const subtotal = items.reduce(
@@ -39,7 +41,7 @@ const OrderSummary = ({
 
     return (
         <div className={`sticky top-4 p-6 rounded-lg shadow-md ${
-            theme === 'dark' ? 'bg-gray-800' : 'bg-white'
+            themeMode === 'dark' ? 'bg-gray-800' : 'bg-white'
             }`}>
             <h2 className="text-xl font-semibold mb-4">{t('orderSummary')}</h2>
 

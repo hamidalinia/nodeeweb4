@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'next-i18next';
 import { updateAddress } from '@/functions';
+import { ThemeData } from '@/types/themeData';
 
 interface UserAddress {
     id?: string;
@@ -23,14 +24,20 @@ const DeliveryForm = ({
                           theme,
                           onSubmit,
                           lang,
+                          showCancel,
+                          onCancel,
                           initialAddress
                       }: {
-    theme: string;
+    theme: ThemeData;
     onSubmit: (data: UserAddress) => void;
     lang: 'fa' | 'en';
+    showCancel?: boolean;
+    onCancel?: () => void;
     initialAddress?: UserAddress;
 }) => {
     const { t } = useTranslation('common');
+    const themeMode=theme?.mode;
+
     const [formData, setFormData] = useState<UserAddress>(initialAddress || {
         fullName: '',
         phone: '',
@@ -71,7 +78,7 @@ const DeliveryForm = ({
     const textAlignClass = isRTL ? 'text-right' : 'text-left';
 
     return (
-        <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} ${directionClass}`}>
+        <div className={`${themeMode === 'dark' ? 'bg-gray-800' : 'bg-white'} ${directionClass}`}>
             <h2 className={`text-xl font-semibold mb-4 ${textAlignClass}`}>
                 {initialAddress ? t('editAddress') : t('newAddress')}
             </h2>
@@ -90,7 +97,7 @@ const DeliveryForm = ({
                             onChange={handleChange}
                             placeholder={t('fullNamePlaceholder')}
                             required
-                            className={`w-full p-3 rounded border ${theme === 'dark' ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`}
+                            className={`w-full p-3 rounded border ${themeMode === 'dark' ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`}
                             dir={isRTL ? 'rtl' : 'ltr'}
                         />
                     </div>
@@ -108,7 +115,7 @@ const DeliveryForm = ({
                             onChange={handleChange}
                             placeholder={t('phonePlaceholder')}
                             required
-                            className={`w-full p-3 rounded border ${theme === 'dark' ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`}
+                            className={`w-full p-3 rounded border ${themeMode === 'dark' ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`}
                             dir="ltr"
                         />
                     </div>
@@ -123,7 +130,7 @@ const DeliveryForm = ({
                             name="country"
                             value={formData.country}
                             onChange={handleChange}
-                            className={`w-full p-3 rounded border ${theme === 'dark' ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`}
+                            className={`w-full p-3 rounded border ${themeMode === 'dark' ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`}
                             dir={isRTL ? 'rtl' : 'ltr'}
                         >
                             <option value="iran">{t('iran')}</option>
@@ -143,7 +150,7 @@ const DeliveryForm = ({
                             value={formData.province}
                             onChange={handleChange}
                             required
-                            className={`w-full p-3 rounded border ${theme === 'dark' ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`}
+                            className={`w-full p-3 rounded border ${themeMode === 'dark' ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`}
                             dir={isRTL ? 'rtl' : 'ltr'}
                         >
                             <option value="">{t('selectProvince')}</option>
@@ -168,7 +175,7 @@ const DeliveryForm = ({
                             onChange={handleChange}
                             placeholder={t('cityPlaceholder')}
                             required
-                            className={`w-full p-3 rounded border ${theme === 'dark' ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`}
+                            className={`w-full p-3 rounded border ${themeMode === 'dark' ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`}
                             dir={isRTL ? 'rtl' : 'ltr'}
                         />
                     </div>
@@ -186,7 +193,7 @@ const DeliveryForm = ({
                             onChange={handleChange}
                             placeholder={t('postalCodePlaceholder')}
                             required
-                            className={`w-full p-3 rounded border ${theme === 'dark' ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`}
+                            className={`w-full p-3 rounded border ${themeMode === 'dark' ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`}
                             dir="ltr"
                         />
                     </div>
@@ -204,7 +211,7 @@ const DeliveryForm = ({
                             placeholder={t('addressPlaceholder')}
                             required
                             rows={3}
-                            className={`w-full p-3 rounded border ${theme === 'dark' ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`}
+                            className={`w-full p-3 rounded border ${themeMode === 'dark' ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`}
                             dir={isRTL ? 'rtl' : 'ltr'}
                         />
                     </div>
@@ -230,7 +237,7 @@ const DeliveryForm = ({
                     type="submit"
                     onClick={(e)=>updateAddress({address:formData})}
                     className={`mt-6 px-6 py-3 rounded font-medium ${
-                        theme === 'dark'
+                        themeMode === 'dark'
                             ? 'bg-purple-600 hover:bg-purple-700'
                             : 'bg-purple-500 hover:bg-purple-600'
                         } text-white transition-colors duration-200 w-full`}

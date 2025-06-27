@@ -74,7 +74,7 @@ export default function ProductPage({
     const [mainImage, setMainImage] = useState(productData?.thumbnail || '/default.jpg');
     // Add this with your other useState hooks
     const [expanded, setExpanded] = useState(false);
-    const features = productData?.excerpt?.fa.split('\n').filter(Boolean) || [];
+    const features = productData?.excerpt?.fa?.split('\n').filter(Boolean) || [];
 
     // State for selected combination (variant)
     const [selectedCombinationId, setSelectedCombinationId] = useState(

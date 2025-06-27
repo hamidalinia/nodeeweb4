@@ -2,33 +2,39 @@
 import { useState, useEffect, useCallback, useRef,useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'next-i18next';
-import { getSettings, getAddress, saveAddress } from '@/functions';
+import { getSettings, getAddress, updateAddress } from '@/functions';
 import CheckoutStepIndicator from '@/components/checkout/CheckoutStepIndicator';
 import AddressStep from '@/components/checkout/AddressStep';
 import ShippingMethodStep from '@/components/checkout/ShippingMethodStep';
 import PaymentStep from '@/components/checkout/PaymentStep';
-import { RootState, CartItem } from '@/types';
+import { CartItem } from '@/types/cart';
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useRouter } from 'next/router';
 import {usePathname, useSearchParams} from "next/navigation";
 const VALID_TABS = ['address', 'orders', 'transactions'];
+import type { RootState } from '@/store';
 
 const CheckoutPage = () => {
     const { t, i18n } = useTranslation('common');
+    type Step = 'address' | 'shipping' | 'payment';
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
-    const queryStep = searchParams.get('step');
-    const activeTab = VALID_TABS.includes(queryStep) ? queryStep : 'address';
-
+    const queryStep = searchParams.get('step') as Step | null;
+    const activeTab: Step =
+        queryStep && VALID_TABS.includes(queryStep)
+            ? (queryStep as Step)
+            : 'address';
     // const queryStep = router.query.step as 'address' | 'shipping' | 'payment' | undefined;
 // console.log("queryStep",queryStep,activeTab)
     const theme = useSelector((state: RootState) => state.theme);
+    const themeMode=theme?.mode;
+
     const cartItems = useSelector((state: RootState) => state.cart);
     const isCartReady = cartItems?.length > 0;
 
     const user = useSelector((state: RootState) => state.user);
-    const reduxAddresses = user?.addresses || [];
+    const reduxAddresses = user?.address || [];
     const lang = i18n.language as 'fa' | 'en';
     const currency = theme?.currency ? t(theme.currency) : 'IRR';
 
@@ -40,7 +46,7 @@ const CheckoutPage = () => {
     const [loading, setLoading] = useState(true);
     const [addressLoading, setAddressLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [activeStep, setActiveStepState] = useState<'address' | 'shipping' | 'payment'>(activeTab);
+    const [activeStep, setActiveStepState] = useState<Step>(activeTab);
 
 
     const [selectedShippingMethod, setSelectedShippingMethod] = useState<number>(0);
@@ -127,11 +133,11 @@ const CheckoutPage = () => {
     const handleNewAddressSubmit = useCallback(async (addressData: any) => {
         try {
             setLoading(true);
-            const savedAddress = await saveAddress(addressData);
+            const savedAddress = await updateAddress(addressData);
             setApiAddresses(prev => [...prev, savedAddress]);
             handleAddressSelect(savedAddress);
         } catch (err) {
-            setError(t('failedToSaveAddress'));
+            setError(t('failedToupdateAddress'));
         } finally {
             setLoading(false);
         }
@@ -178,7 +184,7 @@ const CheckoutPage = () => {
         const fetchSettings = async () => {
             try {
                 setLoading(true);
-                const settings = await getSettings('delivery');
+                const settings = await getSettings();
                 setDeliverySettings(settings);
             } catch (err) {
                 setError(t('failedToLoadSettings'));
@@ -205,7 +211,7 @@ const CheckoutPage = () => {
     }, [hasPhysicalProducts,isCartReady]);
 
     return (
-        <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
+        <div className={`min-h-screen ${themeMode === 'dark' ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
             <div className="container mx-auto px-4 py-8 max-w-6xl">
                 <h1 className="text-3xl font-bold mb-8 text-center">{t('checkout')}</h1>
 
@@ -241,7 +247,6 @@ const CheckoutPage = () => {
                     {activeStep === 'shipping' && hasPhysicalProducts && selectedAddress && (
                         <ShippingMethodStep
                             theme={theme}
-                            t={t}
                             selectedAddress={selectedAddress}
                             deliverySettings={deliverySettings}
                             selectedShippingMethod={selectedShippingMethod}

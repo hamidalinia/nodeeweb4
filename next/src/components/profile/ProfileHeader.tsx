@@ -1,6 +1,6 @@
 import Image from 'next/image';
 
-export default function ProfileHeader({ user }) {
+export default function ProfileHeader({ user }:{user?:any;}) {
     return (
         <div className="bg-gradient-to-r from-indigo-600 to-purple-700 py-12 text-white">
             <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center">
