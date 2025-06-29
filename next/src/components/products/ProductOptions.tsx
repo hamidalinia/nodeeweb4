@@ -1,16 +1,14 @@
 import { useTranslation } from 'next-i18next';
-import type { Option, ProductCombination } from '@/types/product';
+import type { Option, Combination } from '@/types/product';
 
-export const ProductOptions = ({
-                                   options,
-                                   selectedCombination,
-                                   onOptionChange
-                               }: {
+type Props = {
     options?: Option[];
-    selectedCombination?: ProductCombination | null;
+    selectedCombination?: Combination | null;
     onOptionChange: (optionName: string, valueName: string) => void;
-}) => {
-    const { t } = useTranslation('common');
+};
+
+export default function ProductOptions({ options, selectedCombination, onOptionChange }: Props) {
+    const { t } = useTranslation('product');
 
     if (!options || options.length === 0) return null;
 
@@ -38,24 +36,9 @@ export const ProductOptions = ({
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                             </svg>
                         </div>
-
-                        {selectedCombination?.options?.[option.name] && (
-                            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center">
-                                {option.values.find(v => v.name === selectedCombination.options[option.name])?.image && (
-                                    <span
-                                        className="w-5 h-5 rounded-full border border-gray-300"
-                                        style={{
-                                            backgroundImage: `url(${option.values.find(v => v.name === selectedCombination.options[option.name])?.image})`,
-                                            backgroundSize: 'cover',
-                                            backgroundPosition: 'center'
-                                        }}
-                                    ></span>
-                                )}
-                            </div>
-                        )}
                     </div>
                 </div>
             ))}
         </>
     );
-};
+}

@@ -17,6 +17,13 @@ type Props = {
 
 export default function AddToCartButton({ item, variable = false, selectedVariation = null }: Props) {
     const dispatch = useDispatch();
+    console.log("_item",item)
+
+    if(!item?._id){
+        return <></>
+    }
+    console.log("_item",item,item._id)
+
     const { t } = useTranslation('common');
     // if (!ready) return <></>;
     // console.log(ready)
