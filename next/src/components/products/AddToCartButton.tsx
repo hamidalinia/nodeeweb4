@@ -3,82 +3,71 @@
 import { useDispatch } from 'react-redux';
 import { toast } from 'sonner';
 import { addToCart } from '@/store/slices/cartSlice';
-import { ProductType } from '@/types/product';
-import type { ProductCombination } from "@/types/product";
-import type { CartItem } from "@/types/cart";
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next';
 
 type Props = {
-    item: ProductType;
-    variable?: boolean;
-    selectedVariation?: ProductCombination | null;
+    product: ProductType;
+    onAddToCart?: () => void;
+    disabled?: boolean;
+    inStock?: boolean;
+    maxQuantity?: number;
+    className?: string;
 };
 
-
-export default function AddToCartButton({ item, variable = false, selectedVariation = null }: Props) {
+export default function AddToCartButton({
+                                            product,
+                                            onAddToCart,
+                                            disabled = false,
+                                            inStock = true,
+                                            maxQuantity,
+                                            className = ''
+                                        }: Props) {
     const dispatch = useDispatch();
-    console.log("_item",item)
-
-    if(!item?._id){
-        return <></>
-    }
-    console.log("_item",item,item._id)
-
     const { t } = useTranslation('common');
-    // if (!ready) return <></>;
-    // console.log(ready)
-    // console.log(t('Add to cart'))
+
+    const isOutOfStock = !inStock || maxQuantity === 0;
+
     const handleAddToCart = () => {
-        if (variable && !selectedVariation) {
-            toast.error(t('Please select a variation'));
+        if (disabled || isOutOfStock) {
+            toast.error(t('Product is not available'));
             return;
         }
 
-        // Helper function to safely convert to number
-        const toNumber = (value: string | number | null | undefined): number => {
-            if (value === null || value === undefined) return 0;
-            return typeof value === 'string' ? parseFloat(value) || 0 : value;
-        };
-
-        // Map the variation to match CartItem's expected structure
-        const mappedVariation = variable && selectedVariation ? {
-            id: toNumber(selectedVariation._id), // Assuming _id exists on ProductCombination
-            options: selectedVariation.options || {} // Assuming options exists on ProductCombination
-        } : undefined;
-
         const payload: CartItem = {
-            id: item._id,
-            type: item.type === 'variable' ? 'variable' : 'normal',
-            title: item.title,
-            thumbnail: item.thumbnail || '',
-            price: variable
-                ? toNumber(selectedVariation?.price)
-                : toNumber(item.price),
-            salePrice: variable
-                ? toNumber(selectedVariation?.salePrice)
-                : toNumber(item.salePrice),
+            id: product._id,
+            type: product.type === 'variable' ? 'variable' : 'normal',
+            title: product.title,
+            thumbnail: product.thumbnail || '',
+            price: product.price || 0,
+            salePrice: product.salePrice || 0,
             quantity: 1,
-            stock: variable
-                ? toNumber(selectedVariation?.quantity)
-                : toNumber(item.quantity),
-            oneItemPerOrder: item.oneItemPerOrder ?? false,
-            variation: mappedVariation,
+            stock: maxQuantity || product.quantity || 0,
+            oneItemPerOrder: product.oneItemPerOrder ?? false,
         };
 
         dispatch(addToCart(payload));
-
         toast.success(t('Added to cart'));
+
+        if (onAddToCart) {
+            onAddToCart();
+        }
     };
+
+    if (!product?._id) return null;
 
     return (
         <button
             onClick={handleAddToCart}
-            className="add-to-cart-button cursor-pointer inline-flex items-center justify-center px-5 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-blue-500 dark:hover:bg-blue-600 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+            className={`add-to-cart-button inline-flex items-center justify-center px-5 py-2 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                isOutOfStock
+                    ? 'bg-gray-400 text-white cursor-not-allowed'
+                    : 'cursor-pointer text-white bg-blue-600 hover:bg-blue-700 focus:ring-blue-400 dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-offset-gray-900'
+            } ${className}`}
             type="button"
             aria-label={t('Add to cart')}
-            disabled={variable && !selectedVariation}
+            disabled={disabled || isOutOfStock}
         >
-            {t('Add to cart')}
+            {isOutOfStock ? t('Product is out of stock') : t('Add to cart')}
         </button>
     );
 }

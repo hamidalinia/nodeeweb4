@@ -1,9 +1,10 @@
 import Head from 'next/head';
 import { GetServerSidePropsContext } from 'next';
 import { useRouter } from 'next/router';
-import React, { useState } from 'react';
+import React, { useState , useEffect} from 'react';
 import Layout from '@/components/Layout';
 import { useTranslation } from 'next-i18next';
+import { useSelector, useDispatch } from "react-redux";
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 import Breadcrumb from '@/components/products/Breadcrumb';
@@ -25,6 +26,7 @@ export default function ProductPage({
                                         mode,
                                         toggleMode,
                                     }: HomeProps) {
+
     const { t } = useTranslation('product');
     const router = useRouter();
     const [activeTab, setActiveTab] = useState(0);
@@ -32,6 +34,7 @@ export default function ProductPage({
     const [selectedCombinationId, setSelectedCombinationId] = useState(
         productData?.combinations?.[0]?.id ?? null
     );
+
 
     if (!productData) {
         return (
@@ -47,13 +50,68 @@ export default function ProductPage({
         );
     }
 
+
+    // Right after receiving productData
+    useEffect(() => {
+        console.log('Full Product Data:', productData);
+        console.log('Available Combinations:', productData?.combinations);
+
+        if (!productData?.combinations?.length) {
+            console.warn('Product has no variants/combinations');
+        }
+    }, [productData]);
+
     const selectedCombination =
-        productData.combinations?.find((c) => c.id === selectedCombinationId) ??
-            productData.combinations?.[0] ??
-                null;
+        productData?.combinations?.find((c) => c.id === selectedCombinationId) ??
+        productData?.combinations?.[0] ??
+        {
+            id: null,
+            options: {},
+            price: productData?.price || 0,
+            discounted_price: productData?.discounted_price,
+            in_stock: productData?.in_stock ?? false,
+            quantity: productData?.quantity ?? 0,
+        };
+
+    const getStockStatus = () => {
+        // For products with combinations
+        if (productData?.combinations?.length) {
+            return {
+                inStock: selectedCombination?.in_stock ?? false,
+                quantity: selectedCombination?.quantity ?? 0
+            };
+        }
+
+        // For simple products (no combinations)
+        return {
+            inStock: productData?.in_stock ?? false,
+            quantity: productData?.quantity ?? 0
+        };
+    };
+
+    const handleAddToCart = () => {
+        dispatch(addToCart({
+            id: product.id,
+            title: product.title,
+            price: product.price,
+            quantity: 1,
+            thumbnail: product.thumbnail,
+            type: product.type,
+            variation: product.variation, // اگه داری
+        }));
+    };
+
+    const cart = useSelector((state: RootState) => state.cart);
+    console.log("Cart:", cart);
+
+    const { inStock, quantity: availableQuantity } = getStockStatus();
 
     const handleOptionChange = (optionName: string, valueName: string) => {
-        if (!productData?.combinations) return;
+        if (!productData?.combinations?.length) {
+            console.error('No combinations found in product data:', productData);
+            // Handle single-variant products differently if needed
+        }
+        return;
 
         const combo = productData.combinations.find(
             (c) => c.options[optionName] === valueName
@@ -62,7 +120,7 @@ export default function ProductPage({
     };
 
     const incrementQuantity = () => {
-        if (selectedCombination && quantity < selectedCombination.quantity) {
+        if (quantity < availableQuantity) {  // Use availableQuantity instead of selectedCombination.quantity
             setQuantity(quantity + 1);
         }
     };
@@ -182,20 +240,32 @@ export default function ProductPage({
                         <div className="border border-gray-200 dark:border-gray-300 rounded-lg p-4 mb-6">
                             <GuaranteeSection />
 
+
+                            {/* Debugging console logs */}
+                            {console.log('Product Data:', productData)}
+                            {console.log('Selected Combination:', selectedCombination)}
+                            {console.log('In Stock Status:', selectedCombination?.in_stock)}
+                            {console.log('Available Quantity:', selectedCombination?.quantity)}
+
+
                             <div className="hidden md:block">
                                 <ProductPrice combination={selectedCombination} />
                                 <QuantitySelector
                                     quantity={quantity}
-                                    maxQuantity={selectedCombination?.quantity}
+                                    maxQuantity={availableQuantity}  // Use the calculated quantity
                                     onIncrement={incrementQuantity}
                                     onDecrement={decrementQuantity}
                                 />
                                 <AddToCartButton
                                     product={productData}
-                                    variable={productData?.type === 'variable'}
-                                    selectedVariation={selectedCombination}
-                                    quantity={quantity}
+                                    onAddToCart={() => console.log('Add to cart:', productData)}
+                                    disabled={!inStock}
+                                    inStock={inStock}
+                                    maxQuantity={availableQuantity}
+                                    className="mb-6"
                                 />
+
+
                             </div>
                         </div>
                     </div>
@@ -208,17 +278,25 @@ export default function ProductPage({
                             <ProductPrice combination={selectedCombination} isMobile />
                             <QuantitySelector
                                 quantity={quantity}
-                                maxQuantity={selectedCombination?.quantity}
+                                maxQuantity={availableQuantity}  // Use the calculated quantity
                                 onIncrement={incrementQuantity}
                                 onDecrement={decrementQuantity}
                                 isMobile
                             />
+                            {/*<AddToCartButton*/}
+                            {/*    onAddToCart={() => console.log('Add to cart:', productData)}*/}
+                            {/*    disabled={!inStock}*/}
+                            {/*    inStock={inStock}*/}
+                            {/*    maxQuantity={availableQuantity}*/}
+                            {/*    className="flex-1"*/}
+                            {/*/>*/}
                             <AddToCartButton
-                                item={productData}
-                                variable={productData?.type === 'variable'}
-                                selectedVariation={selectedCombination}
-                                quantity={quantity}
-
+                                product={productData}
+                                onAddToCart={() => console.log('Add to cart:', productData)}
+                                disabled={!inStock}
+                                inStock={inStock}
+                                maxQuantity={availableQuantity}
+                                className="flex-1"
                             />
                         </div>
                     </div>

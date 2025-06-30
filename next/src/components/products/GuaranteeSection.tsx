@@ -13,15 +13,15 @@ export default function GuaranteeSection() {
                 </li>
                 <li className="flex items-center">
                     <Undo2 className="w-5 h-5 text-green-500 ml-2" />
-                    {t('guarantees.returnPolicy')}
+                    {t('guarantees returnPolicy')}
                 </li>
                 <li className="flex items-center">
                     <Phone className="w-5 h-5 text-green-500 ml-2" />
-                    {t('guarantees.consultation')}
+                    {t('guarantees consultation')}
                 </li>
                 <li className="flex items-center">
                     <Truck className="w-5 h-5 text-green-500 ml-2" />
-                    {t('guarantees.freeShipping')}
+                    {t('guarantees freeShipping')}
                 </li>
             </ul>
         </div>

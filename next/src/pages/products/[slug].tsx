@@ -6,6 +6,7 @@ import { useRouter } from 'next/router';
 import React, { useState, useEffect } from 'react';
 import Layout from '@/components/Layout';
 import Breadcrumbs from '@/components/products/Breadcrumbs';
+import AddToWishlistButton from '@/components/products/AddToWishlistButton';
 import Filters from '@/components/products/Filters';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'next-i18next';
@@ -216,6 +217,8 @@ export default function ProductPage({
                                         >
                                             {t('Previous')}
                                         </button>
+
+
 
                                         <div className="hidden md:flex space-x-2">
                                             {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
